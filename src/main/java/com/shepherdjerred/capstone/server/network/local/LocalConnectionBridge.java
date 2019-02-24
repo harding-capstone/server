@@ -1,33 +1,33 @@
 package com.shepherdjerred.capstone.server.network.local;
 
-import com.shepherdjerred.capstone.server.events.Event;
+import com.shepherdjerred.capstone.server.network.message.Message;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.ToString;
 
 @ToString
-public class LocalBridge {
-  private final Queue<Event> eventsToServer;
-  private final Queue<Event> eventsToClient;
+public class LocalConnectionBridge {
+  private final Queue<Message> eventsToServer;
+  private final Queue<Message> eventsToClient;
 
-  public LocalBridge() {
+  public LocalConnectionBridge() {
     eventsToServer = new ConcurrentLinkedQueue<>();
     eventsToClient = new ConcurrentLinkedQueue<>();
   }
 
-  public void publishToServer(Event event) {
-    eventsToServer.add(event);
+  public void publishToServer(Message message) {
+    eventsToServer.add(message);
   }
 
-  public void publishToClient(Event event) {
-    eventsToClient.add(event);
+  public void publishToClient(Message message) {
+    eventsToClient.add(message);
   }
 
-  public Event getEventForClient() {
+  public Message getEventForClient() {
     return eventsToClient.remove();
   }
 
-  public Event getEventForServer() {
+  public Message getEventForServer() {
     return eventsToServer.remove();
   }
 

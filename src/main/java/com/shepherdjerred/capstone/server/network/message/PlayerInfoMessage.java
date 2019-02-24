@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.events.network;
+package com.shepherdjerred.capstone.server.network.message;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ConnectionAcceptedEvent implements NetworkEvent {
+public class PlayerInfoMessage implements Message {
 
+  private final String playerName;
 }

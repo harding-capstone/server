@@ -1,7 +1,6 @@
-package com.shepherdjerred.capstone.server.events.network;
+package com.shepherdjerred.capstone.server.network.message;
 
 import com.shepherdjerred.capstone.server.events.Event;
-import com.shepherdjerred.capstone.server.network.Client;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,8 +10,6 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ReceivedEventEvent implements NetworkEvent {
-
-  private final Client client;
+public class EventMessage {
   private final Event event;
 }

@@ -1,0 +1,16 @@
+package com.shepherdjerred.capstone.server.network.event.connection;
+
+import com.shepherdjerred.capstone.server.network.Connection;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
+@Getter
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
+public class ConnectionAcceptedEvent implements ConnectionEvent {
+
+  private final Connection connection;
+}

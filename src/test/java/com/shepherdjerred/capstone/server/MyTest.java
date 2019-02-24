@@ -14,16 +14,16 @@ import com.shepherdjerred.capstone.logic.match.Match;
 import com.shepherdjerred.capstone.logic.match.MatchSettings;
 import com.shepherdjerred.capstone.logic.match.MatchSettings.PlayerCount;
 import com.shepherdjerred.capstone.logic.player.PlayerId;
-import com.shepherdjerred.capstone.server.events.player.PlayerInfoEvent;
-import com.shepherdjerred.capstone.server.network.local.LocalBridge;
-import com.shepherdjerred.capstone.server.server.Server;
+import com.shepherdjerred.capstone.server.network.local.LocalConnectionBridge;
+import com.shepherdjerred.capstone.server.network.message.PlayerInfoMessage;
+import com.shepherdjerred.capstone.server.server.GameServer;
 import com.shepherdjerred.capstone.server.server.ServerSettings;
 import org.junit.Test;
 
 public class MyTest {
 
   @Test
-  public void doTest() {
+  public void doTest() throws InterruptedException {
     BoardSettings boardSettings = new BoardSettings(9, PlayerCount.TWO);
     MatchSettings matchSettings = new MatchSettings(10, PlayerId.ONE, boardSettings);
     BoardCellsInitializer boardCellsInitializer = new BoardCellsInitializer();
@@ -39,24 +39,31 @@ public class MyTest {
         LobbyType.LOCAL,
         false);
 
-    Server server = new Server(new ServerSettings(),
+    GameServer gameServer = new GameServer(new ServerSettings(),
         new ChatHistory(),
         match,
         Lobby.fromLobbySettings(lobbySettings));
 
-    LocalBridge localBridge = new LocalBridge();
+    LocalConnectionBridge localConnectionBridge = new LocalConnectionBridge();
 
-    server.connectLocalClient(localBridge);
+    gameServer.connectLocalClient(localConnectionBridge);
 
-    server.loop();
+    new Thread(() -> {
+      try {
+        gameServer.run();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }).start();
 
-    var infoEvent = new PlayerInfoEvent("My name!!");
-    localBridge.publishToServer(infoEvent);
+    var infoMessage = new PlayerInfoMessage("My name!!");
+    localConnectionBridge.publishToServer(infoMessage);
 
-    server.loop();
+    // TODO let the processing stop...
+    Thread.sleep(1000);
 
     //    var chatEvent = new SendChatEvent(new ChatMessage(player, "Hello!!", Instant.now()));
-//    server.dispatchEvent(connectEvent);
-//    server.dispatchEvent(chatEvent);
+//    gameServer.dispatchEvent(connectEvent);
+//    gameServer.dispatchEvent(chatEvent);
   }
 }

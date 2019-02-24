@@ -1,6 +1,6 @@
-package com.shepherdjerred.capstone.server.events.client;
+package com.shepherdjerred.capstone.server.network.event.connection;
 
-import com.shepherdjerred.capstone.server.network.Client;
+import com.shepherdjerred.capstone.server.network.Connection;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,9 +10,9 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ClientRejectedEvent implements ClientEvent {
+public class ConnectionRejectedEvent implements ConnectionEvent {
 
-  private final Client client;
+  private final Connection connection;
   private final Reason reason;
 
   enum Reason {
