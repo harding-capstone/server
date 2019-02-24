@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network.local;
+package com.shepherdjerred.capstone.server.network.connection.local;
 
 import com.shepherdjerred.capstone.server.network.message.Message;
 import java.util.Queue;

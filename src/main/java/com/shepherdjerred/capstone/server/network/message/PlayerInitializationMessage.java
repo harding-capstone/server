@@ -5,11 +5,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Sent by a client to describe the player to the server.
+ */
 @Getter
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class PlayerInfoMessage implements Message {
+public class PlayerInitializationMessage implements Message {
 
   private final String playerName;
 }

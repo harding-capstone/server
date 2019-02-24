@@ -8,15 +8,18 @@ import com.shepherdjerred.capstone.logic.player.PlayerId;
 import com.shepherdjerred.capstone.server.events.Event;
 import com.shepherdjerred.capstone.server.events.handler.EventLoggerHandler;
 import com.shepherdjerred.capstone.server.events.handler.ThreadSafeEventQueue;
+import com.shepherdjerred.capstone.server.network.event.network.ReceivedMessageEvent;
 import com.shepherdjerred.capstone.server.events.player.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.network.NetworkManager;
 import com.shepherdjerred.capstone.server.network.event.connection.ConnectionAttemptedEvent;
-import com.shepherdjerred.capstone.server.network.handlers.ConnectionAcceptedEventHandler;
-import com.shepherdjerred.capstone.server.network.local.LocalConnectionBridge;
+import com.shepherdjerred.capstone.server.network.connection.local.LocalConnectionBridge;
 import com.shepherdjerred.capstone.server.server.handlers.ConnectionAttemptedEventHandler;
 import com.shepherdjerred.capstone.server.server.handlers.PlayerJoinEventHandler;
+import com.shepherdjerred.capstone.server.server.handlers.ReceivedMessageEventHandler;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @ToString
 public class GameServer {
 
@@ -40,12 +43,12 @@ public class GameServer {
     registerHandlers();
   }
 
-  // TODO move network handlers to network module
   private void registerHandlers() {
     eventQueue.registerHandler(Event.class, new EventLoggerHandler());
     eventQueue.registerHandler(ConnectionAttemptedEvent.class,
         new ConnectionAttemptedEventHandler(this));
     eventQueue.registerHandler(PlayerJoinEvent.class, new PlayerJoinEventHandler(this));
+    eventQueue.registerHandler(ReceivedMessageEvent.class, new ReceivedMessageEventHandler(this));
   }
 
   public void addPlayer(Player player) {
@@ -54,12 +57,19 @@ public class GameServer {
   }
 
   public void run() throws InterruptedException {
+    new Thread(() -> {
+      try {
+        networkManager.run();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }).start();
+
     final int ticksPerSecond = 20;
-    final int secondsPerMinute = 60;
     final int millisecondsPerSecond = 1000;
-    final int sleepMilliseconds = (secondsPerMinute / ticksPerSecond) * millisecondsPerSecond;
+    final int sleepMilliseconds = millisecondsPerSecond / ticksPerSecond;
+
     while (true) {
-      networkManager.pullLatestMessages();
       while (hasEvent()) {
         handleEvent();
       }

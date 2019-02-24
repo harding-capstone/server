@@ -1,8 +1,9 @@
-package com.shepherdjerred.capstone.server.network.local;
+package com.shepherdjerred.capstone.server.network.connection.local;
 
-import com.shepherdjerred.capstone.server.network.Connection;
-import com.shepherdjerred.capstone.server.network.ConnectionStatus;
+import com.shepherdjerred.capstone.server.network.connection.Connection;
+import com.shepherdjerred.capstone.server.network.connection.ConnectionStatus;
 import com.shepherdjerred.capstone.server.network.message.Message;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,9 +17,12 @@ public class LocalConnection implements Connection {
   @Getter
   @Setter
   private ConnectionStatus connectionStatus;
+  @Getter
+  private final UUID uuid;
   private final LocalConnectionBridge localConnectionBridge;
 
-  public LocalConnection(LocalConnectionBridge localConnectionBridge) {
+  public LocalConnection(UUID uuid, LocalConnectionBridge localConnectionBridge) {
+    this.uuid = uuid;
     this.localConnectionBridge = localConnectionBridge;
     this.connectionStatus = ConnectionStatus.DISCONNECTED;
   }

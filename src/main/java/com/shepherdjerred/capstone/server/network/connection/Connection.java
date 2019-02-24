@@ -1,9 +1,12 @@
-package com.shepherdjerred.capstone.server.network;
+package com.shepherdjerred.capstone.server.network.connection;
 
 
 import com.shepherdjerred.capstone.server.network.message.Message;
+import java.util.UUID;
 
 public interface Connection {
+
+  UUID getUuid();
 
   void send(Message message);
 

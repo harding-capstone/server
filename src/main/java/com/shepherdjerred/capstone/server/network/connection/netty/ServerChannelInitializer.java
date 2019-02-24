@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network.netty;
+package com.shepherdjerred.capstone.server.network.connection.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

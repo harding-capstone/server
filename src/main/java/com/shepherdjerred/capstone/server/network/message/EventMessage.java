@@ -10,6 +10,6 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class EventMessage {
-  private final Event event;
+public class EventMessage<T extends Event> {
+  private final T event;
 }

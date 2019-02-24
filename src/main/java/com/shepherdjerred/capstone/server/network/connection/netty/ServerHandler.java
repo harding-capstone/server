@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network.netty;
+package com.shepherdjerred.capstone.server.network.connection.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
