@@ -3,7 +3,7 @@ package com.shepherdjerred.capstone.server.network;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.shepherdjerred.capstone.common.player.Player;
-import com.shepherdjerred.capstone.server.events.handler.ThreadSafeEventQueue;
+import com.shepherdjerred.capstone.server.events.ThreadSafeEventQueue;
 import com.shepherdjerred.capstone.server.network.connection.Connection;
 import com.shepherdjerred.capstone.server.network.connection.ConnectionStatus;
 import com.shepherdjerred.capstone.server.network.event.network.ReceivedMessageEvent;
@@ -41,7 +41,7 @@ public class NetworkManager {
   }
 
   /**
-   * Takes latest message from each client and puts them onto the event queue.
+   * Takes latest packet from each client and puts them onto the event queue.
    */
   public void pullLatestMessages() {
     connections.forEach(connection -> {

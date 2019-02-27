@@ -15,7 +15,7 @@ import com.shepherdjerred.capstone.logic.match.MatchSettings;
 import com.shepherdjerred.capstone.logic.match.MatchSettings.PlayerCount;
 import com.shepherdjerred.capstone.logic.player.PlayerId;
 import com.shepherdjerred.capstone.server.network.connection.local.LocalConnectionBridge;
-import com.shepherdjerred.capstone.server.network.message.PlayerInitializationMessage;
+import com.shepherdjerred.capstone.server.network.packet.PlayerInitializationPacket;
 import com.shepherdjerred.capstone.server.server.GameServer;
 import com.shepherdjerred.capstone.server.server.ServerSettings;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class MyTest {
       }
     }).start();
 
-    var infoMessage = new PlayerInitializationMessage("Jerred");
+    var infoMessage = new PlayerInitializationPacket("Jerred");
     localConnectionBridge.publishToServer(infoMessage);
 
     // TODO let the processing stop...

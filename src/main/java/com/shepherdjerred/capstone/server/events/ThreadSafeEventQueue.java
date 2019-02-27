@@ -1,6 +1,6 @@
-package com.shepherdjerred.capstone.server.events.handler;
+package com.shepherdjerred.capstone.server.events;
 
-import com.shepherdjerred.capstone.server.events.Event;
+import com.shepherdjerred.capstone.server.events.handler.EventHandler;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;

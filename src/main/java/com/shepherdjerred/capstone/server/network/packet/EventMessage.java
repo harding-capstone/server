@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network.message;
+package com.shepherdjerred.capstone.server.network.packet;
 
 import com.shepherdjerred.capstone.server.events.Event;
 import lombok.AllArgsConstructor;

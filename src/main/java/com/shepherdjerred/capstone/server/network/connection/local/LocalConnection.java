@@ -2,7 +2,7 @@ package com.shepherdjerred.capstone.server.network.connection.local;
 
 import com.shepherdjerred.capstone.server.network.connection.Connection;
 import com.shepherdjerred.capstone.server.network.connection.ConnectionStatus;
-import com.shepherdjerred.capstone.server.network.message.Message;
+import com.shepherdjerred.capstone.server.network.packet.Packet;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,12 +28,12 @@ public class LocalConnection implements Connection {
   }
 
   @Override
-  public void send(Message message) {
-    localConnectionBridge.publishToClient(message);
+  public void send(Packet packet) {
+    localConnectionBridge.publishToClient(packet);
   }
 
   @Override
-  public Message getNextMessage() {
+  public Packet getNextMessage() {
     return localConnectionBridge.getEventForServer();
   }
 

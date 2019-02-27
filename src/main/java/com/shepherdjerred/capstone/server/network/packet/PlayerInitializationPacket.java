@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network.message;
+package com.shepherdjerred.capstone.server.network.packet;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class PlayerInitializationMessage implements Message {
+public class PlayerInitializationPacket implements Packet {
 
   private final String playerName;
 }

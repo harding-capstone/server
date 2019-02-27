@@ -1,16 +1,16 @@
 package com.shepherdjerred.capstone.server.network.connection;
 
 
-import com.shepherdjerred.capstone.server.network.message.Message;
+import com.shepherdjerred.capstone.server.network.packet.Packet;
 import java.util.UUID;
 
 public interface Connection {
 
   UUID getUuid();
 
-  void send(Message message);
+  void send(Packet packet);
 
-  Message getNextMessage();
+  Packet getNextMessage();
 
   void setConnectionStatus(ConnectionStatus connectionStatus);
 

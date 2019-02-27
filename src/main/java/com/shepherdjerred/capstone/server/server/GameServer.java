@@ -7,7 +7,7 @@ import com.shepherdjerred.capstone.logic.match.Match;
 import com.shepherdjerred.capstone.logic.player.PlayerId;
 import com.shepherdjerred.capstone.server.events.Event;
 import com.shepherdjerred.capstone.server.events.handler.EventLoggerHandler;
-import com.shepherdjerred.capstone.server.events.handler.ThreadSafeEventQueue;
+import com.shepherdjerred.capstone.server.events.ThreadSafeEventQueue;
 import com.shepherdjerred.capstone.server.network.event.network.ReceivedMessageEvent;
 import com.shepherdjerred.capstone.server.events.player.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.network.NetworkManager;

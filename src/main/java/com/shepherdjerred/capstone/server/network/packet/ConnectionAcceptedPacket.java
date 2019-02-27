@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network.message.connection;
+package com.shepherdjerred.capstone.server.network.packet;
 
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ConnectionAcceptedMessage {
+public class ConnectionAcceptedPacket implements Packet {
 
   private final UUID playerUuid;
 }
