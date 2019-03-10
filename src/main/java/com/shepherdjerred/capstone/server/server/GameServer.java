@@ -1,21 +1,9 @@
 package com.shepherdjerred.capstone.server.server;
 
-import com.shepherdjerred.capstone.common.chat.ChatHistory;
-import com.shepherdjerred.capstone.common.lobby.Lobby;
-import com.shepherdjerred.capstone.common.player.Player;
-import com.shepherdjerred.capstone.logic.match.Match;
-import com.shepherdjerred.capstone.logic.player.PlayerId;
-import com.shepherdjerred.capstone.server.events.Event;
-import com.shepherdjerred.capstone.server.events.handler.EventLoggerHandler;
-import com.shepherdjerred.capstone.server.events.ThreadSafeEventQueue;
-import com.shepherdjerred.capstone.server.network.event.network.ReceivedMessageEvent;
-import com.shepherdjerred.capstone.server.events.player.PlayerJoinEvent;
-import com.shepherdjerred.capstone.server.network.NetworkManager;
-import com.shepherdjerred.capstone.server.network.event.connection.ConnectionAttemptedEvent;
-import com.shepherdjerred.capstone.server.network.connection.local.LocalConnectionBridge;
-import com.shepherdjerred.capstone.server.server.handlers.ConnectionAttemptedEventHandler;
-import com.shepherdjerred.capstone.server.server.handlers.PlayerJoinEventHandler;
-import com.shepherdjerred.capstone.server.server.handlers.ReceivedMessageEventHandler;
+import com.shepherdjerred.capstone.server.event.EventBus;
+import com.shepherdjerred.capstone.server.server.clients.ClientConnector;
+import com.shepherdjerred.capstone.server.server.clients.ClientConnectors;
+import com.shepherdjerred.capstone.server.event.Event;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
@@ -23,73 +11,30 @@ import lombok.extern.log4j.Log4j2;
 @ToString
 public class GameServer {
 
-  private final NetworkManager networkManager;
-  private final ServerSettings serverSettings;
-  private final ThreadSafeEventQueue eventQueue;
-  private ChatHistory chatHistory;
-  private Match match;
-  private Lobby lobby;
+  private final ClientConnectors clientConnectors;
+  private final EventBus<Event> eventQueue;
 
-  public GameServer(ServerSettings serverSettings,
-      ChatHistory chatHistory,
-      Match match,
-      Lobby lobby) {
-    this.serverSettings = serverSettings;
-    this.chatHistory = chatHistory;
-    this.match = match;
-    this.lobby = lobby;
-    this.eventQueue = new ThreadSafeEventQueue();
-    this.networkManager = new NetworkManager(eventQueue);
-    registerHandlers();
-  }
-
-  private void registerHandlers() {
-    eventQueue.registerHandler(Event.class, new EventLoggerHandler());
-    eventQueue.registerHandler(ConnectionAttemptedEvent.class,
-        new ConnectionAttemptedEventHandler(this));
-    eventQueue.registerHandler(PlayerJoinEvent.class, new PlayerJoinEventHandler(this));
-    eventQueue.registerHandler(ReceivedMessageEvent.class, new ReceivedMessageEventHandler(this));
-  }
-
-  public void addPlayer(Player player) {
-    // TODO get next open player ID somehow instead of hardcoding
-    lobby.addPlayer(PlayerId.ONE, player);
+  public GameServer() {
+    this.eventQueue = new EventBus<>();
+    this.clientConnectors = new ClientConnectors(eventQueue);
   }
 
   public void run() throws InterruptedException {
-    new Thread(() -> {
-      try {
-        networkManager.run();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }).start();
-
     final int ticksPerSecond = 20;
     final int millisecondsPerSecond = 1000;
     final int sleepMilliseconds = millisecondsPerSecond / ticksPerSecond;
 
     while (true) {
-      while (hasEvent()) {
-        handleEvent();
-      }
+      work();
       Thread.sleep(sleepMilliseconds);
     }
   }
 
-  public void dispatchEvent(Event event) {
-    eventQueue.dispatchEvent(event);
+  private void work() {
+    clientConnectors.handleLatestEvents();
   }
 
-  public void handleEvent() {
-    eventQueue.handleEvent();
-  }
-
-  public boolean hasEvent() {
-    return !eventQueue.isEmpty();
-  }
-
-  public void connectLocalClient(LocalConnectionBridge localConnectionBridge) {
-    networkManager.startLocalConnection(localConnectionBridge);
+  public void registerConnector(ClientConnector connector) throws InterruptedException {
+    clientConnectors.registerConnector(connector);
   }
 }
