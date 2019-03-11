@@ -1,12 +1,12 @@
 package com.shepherdjerred.capstone.server.server.clients;
 
-import com.shepherdjerred.capstone.server.server.clients.event.events.ConnectorEvent;
+import com.shepherdjerred.capstone.server.server.clients.events.ConnectorEvent;
 
 public interface ClientConnector {
 
-  void acceptConnections() throws InterruptedException;
+  void acceptConnections();
 
-  ConnectorEvent getLatestEvent();
+  ConnectorEvent getNextEvent();
 
   boolean hasEvent();
 }

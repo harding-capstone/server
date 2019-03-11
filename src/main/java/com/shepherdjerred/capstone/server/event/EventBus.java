@@ -11,9 +11,11 @@ import java.util.Set;
  */
 public class EventBus<T extends Event> {
 
+  private final Set<EventHandler<T>> genericHandlers;
   private final Map<Class<T>, Set<EventHandler<T>>> handlers;
 
   public EventBus() {
+    this.genericHandlers = new HashSet<>();
     this.handlers = new HashMap<>();
   }
 
@@ -24,10 +26,15 @@ public class EventBus<T extends Event> {
     handlers.put((Class<T>) eventClass, existingHandlers);
   }
 
+  public void registerHandler(EventHandler<T> handler) {
+    genericHandlers.add(handler);
+  }
+
   @SuppressWarnings("unchecked")
   public void dispatch(T event) {
     var handlers = getHandlers((Class<T>) event.getClass());
     handlers.forEach(handler -> handler.handle(event));
+    genericHandlers.forEach(handler -> handler.handle(event));
   }
 
   private Set<EventHandler<T>> getHandlers(Class<T> eventClass) {

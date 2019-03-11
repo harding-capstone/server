@@ -7,4 +7,5 @@ open module com.shepherdjerred.capstone.server {
   requires com.google.common;
   requires io.netty.all;
   requires org.apache.logging.log4j;
+  requires gson;
 }

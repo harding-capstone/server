@@ -14,10 +14,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ThreadSafeEventBus<T extends Event> {
 
   private final Queue<T> queue;
+  private final Set<EventHandler<T>> genericHandlers;
   private final Map<Class<T>, Set<EventHandler<T>>> handlers;
 
   public ThreadSafeEventBus() {
     queue = new ConcurrentLinkedQueue<>();
+    genericHandlers = new HashSet<>();
     handlers = new ConcurrentHashMap<>();
   }
 
@@ -28,11 +30,16 @@ public class ThreadSafeEventBus<T extends Event> {
     handlers.put((Class<T>) eventClass, existingHandlers);
   }
 
+  public void registerHandler(EventHandler<T> handler) {
+    genericHandlers.add(handler);
+  }
+
   @SuppressWarnings("unchecked")
   public void handleLatestEvent() {
     var event = queue.remove();
     var handlers = getHandlers((Class<T>) event.getClass());
     handlers.forEach(handler -> handler.handle(event));
+    genericHandlers.forEach(handler -> handler.handle(event));
   }
 
   public boolean hasEvent() {
@@ -45,7 +52,7 @@ public class ThreadSafeEventBus<T extends Event> {
 
   public void dispatch(T event) {
     queue.add(event);
-  }
+}
 
   private Set<EventHandler<T>> getHandlers(Class<T> eventClass) {
     return handlers.getOrDefault(eventClass, new HashSet<>());
