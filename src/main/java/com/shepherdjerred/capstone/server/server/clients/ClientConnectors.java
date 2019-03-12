@@ -2,7 +2,7 @@ package com.shepherdjerred.capstone.server.server.clients;
 
 import com.shepherdjerred.capstone.server.event.Event;
 import com.shepherdjerred.capstone.server.event.EventBus;
-import com.shepherdjerred.capstone.server.packets.Packet;
+import com.shepherdjerred.capstone.server.packet.packets.Packet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

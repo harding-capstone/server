@@ -34,7 +34,7 @@ public class NettyTcpConnector implements ClientConnector {
         serverBootstrap.channel(NioServerSocketChannel.class);
         serverBootstrap.localAddress(new InetSocketAddress(nettySettings.getHostname(),
             nettySettings.getPort()));
-        serverBootstrap.childHandler(new TcpServerChannelInitializer(eventQueue));
+        serverBootstrap.childHandler(new PacketChannelInitializer(eventQueue));
 
         ChannelFuture channelFuture = serverBootstrap.bind().sync();
         channelFuture.channel().closeFuture().sync();

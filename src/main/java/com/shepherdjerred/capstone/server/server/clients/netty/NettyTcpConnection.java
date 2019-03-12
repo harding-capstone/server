@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.server.clients.netty;
 
-import com.shepherdjerred.capstone.server.packets.Packet;
+import com.shepherdjerred.capstone.server.packet.packets.Packet;
 import com.shepherdjerred.capstone.server.server.clients.ClientConnection;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class NettyTcpConnection implements ClientConnection {
 
-  private final TcpServerHandler handler;
+  private final ChannelHandler handler;
 
   @Override
   public void sendPacket(Packet packet) {

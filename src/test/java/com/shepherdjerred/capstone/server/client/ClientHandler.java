@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.client;
 
-import com.shepherdjerred.capstone.server.packets.PlayerDescriptionPacket;
+import com.shepherdjerred.capstone.server.packet.packets.PlayerDescriptionPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +21,5 @@ public class ClientHandler extends SimpleChannelInboundHandler {
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
-    log.info("Received" + msg);
   }
 }

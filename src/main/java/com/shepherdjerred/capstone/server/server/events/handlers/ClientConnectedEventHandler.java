@@ -1,7 +1,7 @@
 package com.shepherdjerred.capstone.server.server.events.handlers;
 
 import com.shepherdjerred.capstone.server.event.handlers.EventHandler;
-import com.shepherdjerred.capstone.server.packets.ConnectionAcceptedPacket;
+import com.shepherdjerred.capstone.server.packet.packets.ConnectionAcceptedPacket;
 import com.shepherdjerred.capstone.server.server.clients.ClientConnectors;
 import com.shepherdjerred.capstone.server.server.clients.events.ClientConnectedEvent;
 import lombok.AllArgsConstructor;

@@ -25,9 +25,5 @@ public class ServerTest {
     }).start();
 
     client.start();
-
-    while(true){
-
-    }
   }
 }

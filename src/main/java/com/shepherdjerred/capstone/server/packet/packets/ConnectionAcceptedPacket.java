@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.packets;
+package com.shepherdjerred.capstone.server.packet.packets;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -11,5 +11,4 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ConnectionAcceptedPacket implements Packet {
 
-  private final Identifier identifier = Identifier.CONNECTION_ACCEPTED;
 }

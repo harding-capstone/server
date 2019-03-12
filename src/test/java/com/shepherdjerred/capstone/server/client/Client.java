@@ -1,8 +1,9 @@
 package com.shepherdjerred.capstone.server.client;
 
-import com.shepherdjerred.capstone.server.packets.ByteToPacketDecoder;
-import com.shepherdjerred.capstone.server.packets.PacketToByteEncoder;
-import com.shepherdjerred.capstone.server.packets.serialization.PacketJsonSerializer;
+import com.shepherdjerred.capstone.server.packet.netty.ByteToPacketDecoder;
+import com.shepherdjerred.capstone.server.packet.netty.PacketToByteEncoder;
+import com.shepherdjerred.capstone.server.packet.serialization.PacketJsonSerializer;
+import com.shepherdjerred.capstone.server.server.clients.netty.ExceptionLoggerHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -30,6 +31,7 @@ public class Client {
           pipeline.addLast(new ByteToPacketDecoder(serializer));
           pipeline.addLast(new PacketToByteEncoder(serializer));
           pipeline.addLast(new ClientHandler());
+          pipeline.addLast(new ExceptionLoggerHandler());
         }
       });
       ChannelFuture channelFuture = clientBootstrap.connect().sync();
