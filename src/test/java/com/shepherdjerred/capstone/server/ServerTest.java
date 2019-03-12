@@ -1,9 +1,8 @@
 package com.shepherdjerred.capstone.server;
 
 import com.shepherdjerred.capstone.server.client.Client;
-import com.shepherdjerred.capstone.server.server.GameServer;
-import com.shepherdjerred.capstone.server.server.clients.netty.NettyTcpConnector;
-import com.shepherdjerred.capstone.server.server.clients.netty.NettySettings;
+import com.shepherdjerred.capstone.server.network.netty.NettyTcpConnector;
+import com.shepherdjerred.capstone.server.network.netty.NettySettings;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Test;
 

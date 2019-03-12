@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.client;
 
-import com.shepherdjerred.capstone.server.packet.packets.PlayerDescriptionPacket;
+import com.shepherdjerred.capstone.network.packet.packets.PlayerDescriptionPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.log4j.Log4j2;

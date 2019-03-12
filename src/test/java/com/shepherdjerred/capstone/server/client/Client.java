@@ -1,18 +1,13 @@
 package com.shepherdjerred.capstone.server.client;
 
-import com.shepherdjerred.capstone.server.packet.netty.ByteToPacketDecoder;
-import com.shepherdjerred.capstone.server.packet.netty.PacketToByteEncoder;
-import com.shepherdjerred.capstone.server.packet.serialization.PacketJsonSerializer;
-import com.shepherdjerred.capstone.server.server.clients.netty.ExceptionLoggerHandler;
+import com.shepherdjerred.capstone.server.network.netty.PacketChannelInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Client {
   public void start() throws InterruptedException {
@@ -23,17 +18,7 @@ public class Client {
       clientBootstrap.group(group);
       clientBootstrap.channel(NioSocketChannel.class);
       clientBootstrap.remoteAddress(new InetSocketAddress("localhost", 9999));
-      clientBootstrap.handler(new ChannelInitializer<SocketChannel>() {
-        protected void initChannel(SocketChannel socketChannel) {
-          var pipeline = socketChannel.pipeline();
-          var serializer = new PacketJsonSerializer();
-          pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4));
-          pipeline.addLast(new ByteToPacketDecoder(serializer));
-          pipeline.addLast(new PacketToByteEncoder(serializer));
-          pipeline.addLast(new ClientHandler());
-          pipeline.addLast(new ExceptionLoggerHandler());
-        }
-      });
+      clientBootstrap.handler(new PacketChannelInitializer(new ConcurrentLinkedQueue<>()));
       ChannelFuture channelFuture = clientBootstrap.connect().sync();
       channelFuture.channel().closeFuture().sync();
     } finally {
