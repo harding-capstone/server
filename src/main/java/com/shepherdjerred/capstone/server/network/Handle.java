@@ -6,11 +6,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Identifier for a client connection.
+ */
 @Getter
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ClientHandle {
+public class Handle {
 
   private final UUID uuid;
 }

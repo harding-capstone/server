@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-public class NettySettings {
+public class NettyServerSettings {
 
   private final String hostname;
   private final int port;

@@ -1,11 +1,11 @@
 package com.shepherdjerred.capstone.server.network.netty;
 
-import com.shepherdjerred.capstone.network.packet.packets.ConnectionAcceptedPacket;
 import com.shepherdjerred.capstone.network.packet.packets.Packet;
-import com.shepherdjerred.capstone.server.network.ClientHandle;
-import com.shepherdjerred.capstone.server.network.events.ClientConnectedEvent;
-import com.shepherdjerred.capstone.server.network.events.NetworkEvent;
-import com.shepherdjerred.capstone.server.network.events.PacketReceivedEvent;
+import com.shepherdjerred.capstone.server.events.events.network.ClientConnectedEvent;
+import com.shepherdjerred.capstone.server.events.events.network.ClientDisconnectedEvent;
+import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
+import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
+import com.shepherdjerred.capstone.server.network.Handle;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,29 +16,33 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @RequiredArgsConstructor
-public class ChannelHandler extends ChannelInboundHandlerAdapter {
+public class QueueingChannelHandler extends ChannelInboundHandlerAdapter {
 
   private ChannelHandlerContext context;
-  private final ClientHandle clientHandle;
+  private final Handle handle;
   private final ConcurrentLinkedQueue<NetworkEvent> eventQueue;
 
   @Override
   public void channelActive(ChannelHandlerContext context) {
     this.context = context;
-    eventQueue.add(new ClientConnectedEvent(clientHandle, new NettyTcpConnection(this)));
-    context.channel().writeAndFlush(new ConnectionAcceptedPacket());
+    eventQueue.add(new ClientConnectedEvent(handle, new NettyConnection(this)));
   }
 
   @Override
   public void channelRead(ChannelHandlerContext context, Object message) {
     var packet = (Packet) message;
-    eventQueue.add(new PacketReceivedEvent(clientHandle, packet));
+    eventQueue.add(new PacketReceivedEvent(handle, packet));
   }
 
   @Override
   public void channelReadComplete(ChannelHandlerContext context) {
     context.writeAndFlush(Unpooled.EMPTY_BUFFER)
         .addListener(ChannelFutureListener.CLOSE);
+  }
+
+  @Override
+  public void channelInactive(ChannelHandlerContext ctx) {
+    eventQueue.add(new ClientDisconnectedEvent(handle));
   }
 
   public void send(Object object) {

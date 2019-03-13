@@ -1,8 +1,8 @@
 package com.shepherdjerred.capstone.server.network;
 
-import com.shepherdjerred.capstone.server.network.events.NetworkEvent;
+import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
 
-public interface ClientConnector {
+public interface Connector {
 
   void acceptConnections();
 

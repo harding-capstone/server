@@ -1,4 +1,4 @@
-open module com.shepherdjerred.capstone.server {
+module com.shepherdjerred.capstone.server {
   requires static lombok;
 
   requires com.shepherdjerred.capstone.logic;

@@ -1,7 +1,7 @@
 package com.shepherdjerred.capstone.server.network.netty;
 
-import com.shepherdjerred.capstone.server.network.ClientConnector;
-import com.shepherdjerred.capstone.server.network.events.NetworkEvent;
+import com.shepherdjerred.capstone.server.network.Connector;
+import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -12,14 +12,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class NettyTcpConnector implements ClientConnector {
+public class NettyServerConnector implements Connector {
 
   private final ConcurrentLinkedQueue<NetworkEvent> eventQueue;
-  private final NettySettings nettySettings;
+  private final NettyServerSettings nettyServerSettings;
 
-  public NettyTcpConnector(NettySettings nettySettings) {
+  public NettyServerConnector(NettyServerSettings nettyServerSettings) {
     this.eventQueue = new ConcurrentLinkedQueue<>();
-    this.nettySettings = nettySettings;
+    this.nettyServerSettings = nettyServerSettings;
   }
 
   @Override
@@ -32,9 +32,9 @@ public class NettyTcpConnector implements ClientConnector {
 
         serverBootstrap.group(group);
         serverBootstrap.channel(NioServerSocketChannel.class);
-        serverBootstrap.localAddress(new InetSocketAddress(nettySettings.getHostname(),
-            nettySettings.getPort()));
-        serverBootstrap.childHandler(new PacketChannelInitializer(eventQueue));
+        serverBootstrap.localAddress(new InetSocketAddress(nettyServerSettings.getHostname(),
+            nettyServerSettings.getPort()));
+        serverBootstrap.childHandler(new ServerChannelInitializer(eventQueue));
 
         ChannelFuture channelFuture = serverBootstrap.bind().sync();
         channelFuture.channel().closeFuture().sync();

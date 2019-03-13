@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network.events;
+package com.shepherdjerred.capstone.server.events.events.network;
 
 import com.shepherdjerred.capstone.events.Event;
 
