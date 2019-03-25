@@ -7,6 +7,5 @@ public class PlayerJoinEventHandler implements EventHandler<PlayerJoinEvent> {
 
   @Override
   public void handle(PlayerJoinEvent event) {
-
   }
 }
