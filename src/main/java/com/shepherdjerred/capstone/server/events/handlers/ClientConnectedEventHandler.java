@@ -13,7 +13,7 @@ public class ClientConnectedEventHandler implements EventHandler<ClientConnected
 
   @Override
   public void handle(ClientConnectedEvent event) {
-    connectorHub.addClientHandle(event.getHandle(), event.getConnection());
-    connectorHub.sendPacket(event.getHandle(), new ConnectionAcceptedPacket());
+    connectorHub.addClientHandle(event.getClientId(), event.getConnection());
+    connectorHub.sendPacket(event.getClientId(), new ConnectionAcceptedPacket());
   }
 }

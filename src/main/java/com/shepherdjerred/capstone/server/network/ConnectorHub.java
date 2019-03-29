@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ConnectorHub {
 
-  private final Map<Handle, Connection> connectionHandles;
+  private final Map<ClientId, Connection> connectionHandles;
   private final Set<Connector> connectors;
   private final EventBus<Event> eventBus;
 
@@ -25,8 +25,8 @@ public class ConnectorHub {
     this.eventBus = serverEventBus;
   }
 
-  public void sendPacket(Handle handle, Packet packet) {
-    var connection = connectionHandles.get(handle);
+  public void sendPacket(ClientId clientId, Packet packet) {
+    var connection = connectionHandles.get(clientId);
     connection.sendPacket(packet);
   }
 
@@ -36,8 +36,8 @@ public class ConnectorHub {
     });
   }
 
-  public void addClientHandle(Handle handle, Connection connection) {
-    connectionHandles.put(handle, connection);
+  public void addClientHandle(ClientId clientId, Connection connection) {
+    connectionHandles.put(clientId, connection);
   }
 
   public void registerConnector(Connector connector) {

@@ -3,7 +3,7 @@ package com.shepherdjerred.capstone.server.events.events;
 
 import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
-import com.shepherdjerred.capstone.server.network.Handle;
+import com.shepherdjerred.capstone.server.network.ClientId;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,6 +14,6 @@ import lombok.ToString;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class PlayerJoinEvent implements Event {
-  private final Handle handle;
+  private final ClientId clientId;
   private final Player player;
 }

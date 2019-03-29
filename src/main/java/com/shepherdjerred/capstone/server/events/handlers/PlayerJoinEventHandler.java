@@ -14,7 +14,7 @@ public class PlayerJoinEventHandler implements EventHandler<PlayerJoinEvent> {
 
   @Override
   public void handle(PlayerJoinEvent playerJoinEvent) {
-    gameServer.addPlayer(playerJoinEvent.getHandle(), playerJoinEvent.getPlayer());
+    gameServer.addPlayer(playerJoinEvent.getClientId(), playerJoinEvent.getPlayer());
     connectorHub.sendPacket(new PlayerDescriptionPacket(playerJoinEvent.getPlayer().getName()) {
     });
   }

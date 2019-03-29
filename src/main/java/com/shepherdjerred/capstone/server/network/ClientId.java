@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class Handle {
+public class ClientId {
 
   private final UUID uuid;
 }

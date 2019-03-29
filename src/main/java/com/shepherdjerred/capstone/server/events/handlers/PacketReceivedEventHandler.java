@@ -13,7 +13,7 @@ import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEv
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class ClientPacketReceivedEventHandler implements EventHandler<PacketReceivedEvent> {
+public class PacketReceivedEventHandler implements EventHandler<PacketReceivedEvent> {
 
   private final GameServer gameServer;
 
@@ -21,11 +21,12 @@ public class ClientPacketReceivedEventHandler implements EventHandler<PacketRece
   public void handle(PacketReceivedEvent event) {
     var packet = event.getPacket();
     if (packet instanceof SendChatMessagePacket) {
-      gameServer.dispatch(new PlayerChatEvent(gameServer.getPlayerByHandle(event.getHandle()), ((SendChatMessagePacket) packet).getChatMessage()));
+      gameServer.dispatch(new PlayerChatEvent(gameServer.getPlayerByHandle(event.getClientId()), ((SendChatMessagePacket) packet).getChatMessage()));
     } else if (packet instanceof PlayerDescriptionPacket) {
       //TODO add element to description
-      Player player = new HumanPlayer(event.getHandle().getUuid(), ((PlayerDescriptionPacket) packet).getName(), Element.FIRE);
-      gameServer.dispatch(new PlayerJoinEvent(event.getHandle(), player));
+      Player player = new HumanPlayer(event.getClientId().getUuid(),
+          ((PlayerDescriptionPacket) packet).getName(), Element.FIRE);
+      gameServer.dispatch(new PlayerJoinEvent(event.getClientId(), player));
     }
   }
 }

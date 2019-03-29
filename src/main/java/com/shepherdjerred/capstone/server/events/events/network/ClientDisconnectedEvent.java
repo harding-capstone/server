@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.events.events.network;
 
-import com.shepherdjerred.capstone.server.network.Handle;
+import com.shepherdjerred.capstone.server.network.ClientId;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,5 +12,5 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ClientDisconnectedEvent implements NetworkEvent {
 
-  private final Handle handle;
+  private final ClientId clientId;
 }

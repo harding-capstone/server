@@ -109,7 +109,7 @@ hs_err_pid*
 ### Linux ###
 *~
 
-# temporary files which can be created if a process still has a handle open of a deleted file
+# temporary files which can be created if a process still has a clientId open of a deleted file
 .fuse_hidden*
 
 # KDE directory preferences

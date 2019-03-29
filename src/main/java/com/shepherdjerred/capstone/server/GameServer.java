@@ -10,11 +10,15 @@ import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventLoggerHandler;
 import com.shepherdjerred.capstone.server.events.events.PlayerChatEvent;
 import com.shepherdjerred.capstone.server.events.events.network.ClientConnectedEvent;
+import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
 import com.shepherdjerred.capstone.server.events.handlers.ClientConnectedEventHandler;
+import com.shepherdjerred.capstone.server.events.handlers.PacketReceivedEventHandler;
 import com.shepherdjerred.capstone.server.events.handlers.PlayerChatEventHandler;
+import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.network.Connector;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
-import com.shepherdjerred.capstone.server.network.Handle;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
@@ -25,13 +29,15 @@ public class GameServer {
 
   @Getter
   private ChatHistory chatHistory;
+  private final Map<ClientId, Player> clientIdPlayerMap;
   private final ConnectorHub connectorHub;
   private final EventBus<Event> eventQueue;
-  private final BiMap<Handle, Player> handlePlayerMap;
+  private final BiMap<ClientId, Player> handlePlayerMap;
 
   public GameServer() {
     this.chatHistory = new ChatHistory();
     this.eventQueue = new EventBus<>();
+    clientIdPlayerMap = new HashMap<>();
     this.connectorHub = new ConnectorHub(eventQueue);
     handlePlayerMap = HashBiMap.create();
     registerNetworkEventHandlers();
@@ -42,8 +48,8 @@ public class GameServer {
     chatHistory = chatHistory.addMessage(message);
   }
 
-  public void addPlayer(Handle handle, Player player) {
-    handlePlayerMap.put(handle, player);
+  public void addPlayer(ClientId clientId, Player player) {
+    handlePlayerMap.put(clientId, player);
   }
 
   private void registerNetworkEventHandlers() {
@@ -53,6 +59,8 @@ public class GameServer {
   }
 
   private void registerEventHandlers() {
+    eventQueue.registerHandler(PacketReceivedEvent.class,
+        new PacketReceivedEventHandler(this));
     eventQueue.registerHandler(PlayerChatEvent.class,
         new PlayerChatEventHandler(this, connectorHub));
   }
@@ -82,7 +90,7 @@ public class GameServer {
     eventQueue.dispatch(event);
   }
 
-  public Player getPlayerByHandle (Handle handle) {
-    return handlePlayerMap.get(handle);
+  public Player getPlayerByHandle (ClientId clientId) {
+    return handlePlayerMap.get(clientId);
   }
 }

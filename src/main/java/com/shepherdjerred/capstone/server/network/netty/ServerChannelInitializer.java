@@ -3,7 +3,7 @@ package com.shepherdjerred.capstone.server.network.netty;
 import com.shepherdjerred.capstone.network.netty.PacketCodec;
 import com.shepherdjerred.capstone.network.netty.handlers.ExceptionLoggerHandler;
 import com.shepherdjerred.capstone.network.packet.serialization.PacketJsonSerializer;
-import com.shepherdjerred.capstone.server.network.Handle;
+import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
@@ -19,7 +19,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
   @Override
   protected void initChannel(SocketChannel socketChannel) {
-    var clientHandle = new Handle(UUID.randomUUID());
+    var clientHandle = new ClientId(UUID.randomUUID());
     var pipeline = socketChannel.pipeline();
     var serializer = new PacketJsonSerializer();
 
