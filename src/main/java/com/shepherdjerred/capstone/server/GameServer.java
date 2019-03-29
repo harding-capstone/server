@@ -1,7 +1,10 @@
 package com.shepherdjerred.capstone.server;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.shepherdjerred.capstone.common.chat.ChatHistory;
 import com.shepherdjerred.capstone.common.chat.ChatMessage;
+import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventLoggerHandler;
@@ -11,6 +14,7 @@ import com.shepherdjerred.capstone.server.events.handlers.ClientConnectedEventHa
 import com.shepherdjerred.capstone.server.events.handlers.PlayerChatEventHandler;
 import com.shepherdjerred.capstone.server.network.Connector;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
+import com.shepherdjerred.capstone.server.network.Handle;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
@@ -23,17 +27,23 @@ public class GameServer {
   private ChatHistory chatHistory;
   private final ConnectorHub connectorHub;
   private final EventBus<Event> eventQueue;
+  private final BiMap<Handle, Player> handlePlayerMap;
 
   public GameServer() {
     this.chatHistory = new ChatHistory();
     this.eventQueue = new EventBus<>();
     this.connectorHub = new ConnectorHub(eventQueue);
+    handlePlayerMap = HashBiMap.create();
     registerNetworkEventHandlers();
     registerEventHandlers();
   }
 
   public void addChatMessage(ChatMessage message) {
     chatHistory = chatHistory.addMessage(message);
+  }
+
+  public void addPlayer(Handle handle, Player player) {
+    handlePlayerMap.put(handle, player);
   }
 
   private void registerNetworkEventHandlers() {
@@ -58,6 +68,8 @@ public class GameServer {
     }
   }
 
+
+
   private void process() {
     connectorHub.handleLatestEvents();
   }
@@ -68,5 +80,9 @@ public class GameServer {
 
   public void dispatch(Event event) {
     eventQueue.dispatch(event);
+  }
+
+  public Player getPlayerByHandle (Handle handle) {
+    return handlePlayerMap.get(handle);
   }
 }

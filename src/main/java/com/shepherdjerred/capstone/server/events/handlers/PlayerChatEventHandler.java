@@ -1,7 +1,7 @@
 package com.shepherdjerred.capstone.server.events.handlers;
 
 import com.shepherdjerred.capstone.events.handlers.EventHandler;
-import com.shepherdjerred.capstone.network.packet.packets.UpdateChatHistoryPacket;
+import com.shepherdjerred.capstone.network.packet.packets.SendChatMessagePacket;
 import com.shepherdjerred.capstone.server.GameServer;
 import com.shepherdjerred.capstone.server.events.events.PlayerChatEvent;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
@@ -16,6 +16,7 @@ public class PlayerChatEventHandler implements EventHandler<PlayerChatEvent> {
   @Override
   public void handle(PlayerChatEvent playerChatEvent) {
     gameServer.addChatMessage(playerChatEvent.getChatMessage());
-    connectorHub.sendPacket(new UpdateChatHistoryPacket(gameServer.getChatHistory()));
+    connectorHub.sendPacket(new SendChatMessagePacket(playerChatEvent.getChatMessage()) {
+    });
   }
 }
