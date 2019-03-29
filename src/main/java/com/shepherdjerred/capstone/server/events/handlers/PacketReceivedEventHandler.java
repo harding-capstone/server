@@ -21,7 +21,7 @@ public class PacketReceivedEventHandler implements EventHandler<PacketReceivedEv
   public void handle(PacketReceivedEvent event) {
     var packet = event.getPacket();
     if (packet instanceof SendChatMessagePacket) {
-      gameServer.dispatch(new PlayerChatEvent(gameServer.getPlayerByHandle(event.getClientId()), ((SendChatMessagePacket) packet).getChatMessage()));
+      gameServer.dispatch(new PlayerChatEvent(gameServer.getPlayerByClientId(event.getClientId()), ((SendChatMessagePacket) packet).getChatMessage()));
     } else if (packet instanceof PlayerDescriptionPacket) {
       //TODO add element to description
       Player player = new HumanPlayer(event.getClientId().getUuid(),

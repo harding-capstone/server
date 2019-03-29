@@ -76,8 +76,6 @@ public class GameServer {
     }
   }
 
-
-
   private void process() {
     connectorHub.handleLatestEvents();
   }
@@ -90,7 +88,7 @@ public class GameServer {
     eventQueue.dispatch(event);
   }
 
-  public Player getPlayerByHandle (ClientId clientId) {
+  public Player getPlayerByClientId(ClientId clientId) {
     return handlePlayerMap.get(clientId);
   }
 }
