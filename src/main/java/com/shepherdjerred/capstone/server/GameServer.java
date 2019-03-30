@@ -1,5 +1,7 @@
 package com.shepherdjerred.capstone.server;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.shepherdjerred.capstone.common.chat.ChatHistory;
 import com.shepherdjerred.capstone.common.chat.ChatMessage;
 import com.shepherdjerred.capstone.common.player.Player;
@@ -30,22 +32,24 @@ public class GameServer {
   private final Map<ClientId, Player> clientIdPlayerMap;
   private final ConnectorHub connectorHub;
   private final EventBus<Event> eventQueue;
+  private final BiMap<ClientId, Player> handlePlayerMap;
 
   public GameServer() {
     this.chatHistory = new ChatHistory();
     this.eventQueue = new EventBus<>();
     clientIdPlayerMap = new HashMap<>();
     this.connectorHub = new ConnectorHub(eventQueue);
+    handlePlayerMap = HashBiMap.create();
     registerNetworkEventHandlers();
     registerEventHandlers();
   }
 
-  public void addPlayer(ClientId clientId, Player player) {
-
-  }
-
   public void addChatMessage(ChatMessage message) {
     chatHistory = chatHistory.addMessage(message);
+  }
+
+  public void addPlayer(ClientId clientId, Player player) {
+    handlePlayerMap.put(clientId, player);
   }
 
   private void registerNetworkEventHandlers() {
@@ -82,5 +86,9 @@ public class GameServer {
 
   public void dispatch(Event event) {
     eventQueue.dispatch(event);
+  }
+
+  public Player getPlayerByClientId(ClientId clientId) {
+    return handlePlayerMap.get(clientId);
   }
 }
