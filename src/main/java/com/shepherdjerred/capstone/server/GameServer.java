@@ -4,6 +4,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.shepherdjerred.capstone.common.chat.ChatHistory;
 import com.shepherdjerred.capstone.common.chat.ChatMessage;
+import com.shepherdjerred.capstone.common.lobby.Lobby;
+import com.shepherdjerred.capstone.common.lobby.LobbySettings;
 import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
@@ -33,13 +35,15 @@ public class GameServer {
   private final ConnectorHub connectorHub;
   private final EventBus<Event> eventQueue;
   private final BiMap<ClientId, Player> handlePlayerMap;
+  private final Lobby lobby;
 
-  public GameServer() {
+  public GameServer(LobbySettings lobbySettings) {
     this.chatHistory = new ChatHistory();
     this.eventQueue = new EventBus<>();
     clientIdPlayerMap = new HashMap<>();
     this.connectorHub = new ConnectorHub(eventQueue);
     handlePlayerMap = HashBiMap.create();
+    lobby = Lobby.fromLobbySettings(lobbySettings);
     registerNetworkEventHandlers();
     registerEventHandlers();
   }
@@ -49,7 +53,11 @@ public class GameServer {
   }
 
   public void addPlayer(ClientId clientId, Player player) {
-    handlePlayerMap.put(clientId, player);
+    if (!lobby.isFull()) {
+      handlePlayerMap.put(clientId, player);
+      lobby.addPlayer(player);
+    }
+
   }
 
   private void registerNetworkEventHandlers() {
