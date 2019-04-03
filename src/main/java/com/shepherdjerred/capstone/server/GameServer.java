@@ -14,6 +14,7 @@ import com.shepherdjerred.capstone.server.events.events.PlayerChatEvent;
 import com.shepherdjerred.capstone.server.events.events.network.ClientConnectedEvent;
 import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
 import com.shepherdjerred.capstone.server.events.handlers.ClientConnectedEventHandler;
+import com.shepherdjerred.capstone.server.events.exception.LobbyFullException;
 import com.shepherdjerred.capstone.server.events.handlers.PacketReceivedEventHandler;
 import com.shepherdjerred.capstone.server.events.handlers.PlayerChatEventHandler;
 import com.shepherdjerred.capstone.server.network.ClientId;
@@ -52,10 +53,12 @@ public class GameServer {
     chatHistory = chatHistory.addMessage(message);
   }
 
-  public void addPlayer(ClientId clientId, Player player) {
+  public void addPlayer(ClientId clientId, Player player) throws LobbyFullException {
     if (!lobby.isFull()) {
       handlePlayerMap.put(clientId, player);
       lobby.addPlayer(player);
+    } else {
+      throw new LobbyFullException();
     }
 
   }
