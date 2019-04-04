@@ -44,7 +44,7 @@ public class GameServer {
     clientIdPlayerMap = new HashMap<>();
     this.connectorHub = new ConnectorHub(eventQueue);
     handlePlayerMap = HashBiMap.create();
-    lobby = Lobby.fromLobbySettings(lobbySettings);
+    lobby = Lobby.from(lobbySettings);
     registerNetworkEventHandlers();
     registerEventHandlers();
   }
