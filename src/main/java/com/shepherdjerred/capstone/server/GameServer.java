@@ -63,6 +63,12 @@ public class GameServer {
 
   }
 
+  public void removePlayer(ClientId clientId, Player player) {
+      handlePlayerMap.remove(clientId, player);
+      lobby.removePlayer(player);
+
+  }
+
   private void registerNetworkEventHandlers() {
     eventQueue.registerHandler(new EventLoggerHandler<>());
     eventQueue.registerHandler(ClientConnectedEvent.class,
