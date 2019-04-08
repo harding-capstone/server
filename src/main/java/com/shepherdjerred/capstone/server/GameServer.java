@@ -4,6 +4,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.shepherdjerred.capstone.common.chat.ChatHistory;
 import com.shepherdjerred.capstone.common.chat.ChatMessage;
+import com.shepherdjerred.capstone.common.lobby.Lobby;
+import com.shepherdjerred.capstone.common.lobby.LobbySettings;
 import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
@@ -12,6 +14,7 @@ import com.shepherdjerred.capstone.server.events.events.PlayerChatEvent;
 import com.shepherdjerred.capstone.server.events.events.network.ClientConnectedEvent;
 import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
 import com.shepherdjerred.capstone.server.events.handlers.ClientConnectedEventHandler;
+import com.shepherdjerred.capstone.server.events.exception.LobbyFullException;
 import com.shepherdjerred.capstone.server.events.handlers.PacketReceivedEventHandler;
 import com.shepherdjerred.capstone.server.events.handlers.PlayerChatEventHandler;
 import com.shepherdjerred.capstone.server.network.ClientId;
@@ -33,13 +36,15 @@ public class GameServer {
   private final ConnectorHub connectorHub;
   private final EventBus<Event> eventQueue;
   private final BiMap<ClientId, Player> handlePlayerMap;
+  private final Lobby lobby;
 
-  public GameServer() {
+  public GameServer(LobbySettings lobbySettings) {
     this.chatHistory = new ChatHistory();
     this.eventQueue = new EventBus<>();
     clientIdPlayerMap = new HashMap<>();
     this.connectorHub = new ConnectorHub(eventQueue);
     handlePlayerMap = HashBiMap.create();
+    lobby = Lobby.from(lobbySettings);
     registerNetworkEventHandlers();
     registerEventHandlers();
   }
@@ -48,8 +53,14 @@ public class GameServer {
     chatHistory = chatHistory.addMessage(message);
   }
 
-  public void addPlayer(ClientId clientId, Player player) {
-    handlePlayerMap.put(clientId, player);
+  public void addPlayer(ClientId clientId, Player player) throws LobbyFullException {
+    if (!lobby.isFull()) {
+      handlePlayerMap.put(clientId, player);
+      lobby.addPlayer(player);
+    } else {
+      throw new LobbyFullException();
+    }
+
   }
 
   private void registerNetworkEventHandlers() {
