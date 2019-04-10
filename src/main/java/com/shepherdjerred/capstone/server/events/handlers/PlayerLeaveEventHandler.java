@@ -5,6 +5,7 @@ import com.shepherdjerred.capstone.network.packet.packets.LobbyAction;
 import com.shepherdjerred.capstone.network.packet.packets.PlayerLobbyActionPacket;
 import com.shepherdjerred.capstone.server.GameServer;
 import com.shepherdjerred.capstone.server.events.events.PlayerLeaveEvent;
+import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
 import lombok.AllArgsConstructor;
 
@@ -15,7 +16,8 @@ public class PlayerLeaveEventHandler implements EventHandler<PlayerLeaveEvent> {
 
   @Override
   public void handle(PlayerLeaveEvent playerLeaveEvent) {
-    gameServer.removePlayer(playerLeaveEvent.getClientId(), playerLeaveEvent.getPlayer());
+    var clientId = new ClientId(playerLeaveEvent.getPlayer().getUuid());
+    gameServer.removePlayer(clientId, playerLeaveEvent.getPlayer());
     connectorHub.sendPacket(new PlayerLobbyActionPacket(playerLeaveEvent.getPlayer(), LobbyAction.LEAVE) {
     });
   }

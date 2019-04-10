@@ -10,6 +10,8 @@ import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventLoggerHandler;
+import com.shepherdjerred.capstone.logic.match.Match;
+import com.shepherdjerred.capstone.logic.turn.Turn;
 import com.shepherdjerred.capstone.server.events.events.PlayerChatEvent;
 import com.shepherdjerred.capstone.server.events.events.network.ClientConnectedEvent;
 import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
@@ -23,6 +25,7 @@ import com.shepherdjerred.capstone.server.network.ConnectorHub;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,7 +39,11 @@ public class GameServer {
   private final ConnectorHub connectorHub;
   private final EventBus<Event> eventQueue;
   private final BiMap<ClientId, Player> handlePlayerMap;
-  private final Lobby lobby;
+  @Getter
+  private Lobby lobby;
+  @Getter
+  @Setter
+  private Match match;
 
   public GameServer(LobbySettings lobbySettings) {
     this.chatHistory = new ChatHistory();
@@ -49,6 +56,13 @@ public class GameServer {
     registerEventHandlers();
   }
 
+  public void MakeTurn(Turn turn) {
+    match.doTurn(turn);
+  }
+
+  public void updateLobby(LobbySettings lobbySettings) {
+   lobby = Lobby.from(lobbySettings);
+  }
   public void addChatMessage(ChatMessage message) {
     chatHistory = chatHistory.addMessage(message);
   }

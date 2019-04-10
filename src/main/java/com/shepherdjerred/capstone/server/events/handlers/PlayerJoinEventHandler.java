@@ -6,6 +6,7 @@ import com.shepherdjerred.capstone.network.packet.packets.PlayerLobbyActionPacke
 import com.shepherdjerred.capstone.server.GameServer;
 import com.shepherdjerred.capstone.server.events.events.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.events.exception.LobbyFullException;
+import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
 import lombok.AllArgsConstructor;
 
@@ -17,7 +18,8 @@ public class PlayerJoinEventHandler implements EventHandler<PlayerJoinEvent> {
   @Override
   public void handle(PlayerJoinEvent playerJoinEvent) {
     try {
-      gameServer.addPlayer(playerJoinEvent.getClientId(), playerJoinEvent.getPlayer());
+      var clientId = new ClientId(playerJoinEvent.getPlayer().getUuid());
+      gameServer.addPlayer(clientId, playerJoinEvent.getPlayer());
       connectorHub.sendPacket(new PlayerLobbyActionPacket(playerJoinEvent.getPlayer(), LobbyAction.JOIN) {
       });
     } catch (LobbyFullException e) {
