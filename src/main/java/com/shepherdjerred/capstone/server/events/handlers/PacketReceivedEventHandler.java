@@ -13,6 +13,7 @@ import com.shepherdjerred.capstone.network.packet.packets.PlayerDescriptionPacke
 import com.shepherdjerred.capstone.network.packet.packets.PlayerLobbyActionPacket;
 import com.shepherdjerred.capstone.network.packet.packets.ReadyToStartGamePacket;
 import com.shepherdjerred.capstone.network.packet.packets.SendChatMessagePacket;
+import com.shepherdjerred.capstone.network.packet.packets.ServerDiscoveryPacket;
 import com.shepherdjerred.capstone.server.GameServer;
 import com.shepherdjerred.capstone.server.events.events.EditLobbyEvent;
 import com.shepherdjerred.capstone.server.events.events.HostLeaveEvent;
@@ -20,6 +21,7 @@ import com.shepherdjerred.capstone.server.events.events.PlayerChatEvent;
 import com.shepherdjerred.capstone.server.events.events.PlayerEvictEvent;
 import com.shepherdjerred.capstone.server.events.events.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.events.events.PlayerLeaveEvent;
+import com.shepherdjerred.capstone.server.events.events.ServerDiscoveryEvent;
 import com.shepherdjerred.capstone.server.events.events.StartGameEvent;
 import com.shepherdjerred.capstone.server.events.events.TurnEvent;
 import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
@@ -46,6 +48,8 @@ public class PacketReceivedEventHandler implements EventHandler<PacketReceivedEv
       handleReadyToStartGamePacket((ReadyToStartGamePacket) packet);
     } else if (packet instanceof MakeTurnPacket) {
       handleMakeTurnPacket((MakeTurnPacket) packet);
+    } else if (packet instanceof ServerDiscoveryPacket) {
+      handleServerDiscoveryPacket();
     }
   }
 
@@ -88,5 +92,9 @@ public class PacketReceivedEventHandler implements EventHandler<PacketReceivedEv
 
   private void handleMakeTurnPacket(MakeTurnPacket makeTurnPacket) {
     gameServer.dispatch(new TurnEvent(makeTurnPacket.getTurn(), makeTurnPacket.getPlayer()));
+  }
+
+  private void handleServerDiscoveryPacket() {
+    gameServer.dispatch(new ServerDiscoveryEvent());
   }
 }
