@@ -1,6 +1,5 @@
 module com.shepherdjerred.capstone.server {
   requires static lombok;
-
   requires com.shepherdjerred.capstone.logic;
   requires com.shepherdjerred.capstone.common;
   requires com.shepherdjerred.capstone.events;
@@ -10,4 +9,6 @@ module com.shepherdjerred.capstone.server {
   requires org.apache.logging.log4j;
   requires gson;
   requires gson.extras;
+
+  exports com.shepherdjerred.capstone.server;
 }
