@@ -23,7 +23,7 @@ public class PlayerJoinEventHandler implements EventHandler<PlayerJoinEvent> {
       gameServer.addPlayer(clientId, playerJoinEvent.getPlayer());
       connectorHub.sendPacket(new PlayerLobbyActionPacket(playerJoinEvent.getPlayer(), LobbyAction.JOIN) {
       });
-      connectorHub.sendPacket(clientId, new CreatedPlayerPacket(playerJoinEvent.getPlayer()) {
+      connectorHub.sendPacket(clientId, new CreatedPlayerPacket(playerJoinEvent.getPlayer(), gameServer.getLobby()) {
       });
     } catch (LobbyFullException e) {
       e.printStackTrace();
