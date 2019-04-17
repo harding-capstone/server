@@ -39,7 +39,6 @@ import com.shepherdjerred.capstone.server.events.handlers.TurnEventHandler;
 import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.network.Connector;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
-import com.shepherdjerred.capstone.server.network.netty.NettyServerBroadcast;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -114,6 +113,10 @@ public class GameServer {
     eventQueue.registerHandler(new EventLoggerHandler<>());
     eventQueue.registerHandler(ClientConnectedEvent.class,
         new ClientConnectedEventHandler(connectorHub));
+    eventQueue.registerHandler(ClientDisconnectedEvent.class,
+        new ClientDisconnectedEventHandler(this, connectorHub));
+    eventQueue.registerHandler(PacketReceivedEvent.class,
+        new PacketReceivedEventHandler(this));
   }
 
   private void registerEventHandlers() {

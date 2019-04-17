@@ -1,17 +1,12 @@
 package com.shepherdjerred.capstone.server.network.netty;
 
-import com.shepherdjerred.capstone.common.lobby.LobbySettings;
 import com.shepherdjerred.capstone.network.packet.packets.ServerBroadcastPacket;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.util.CharsetUtil;
-import io.netty.util.internal.SocketUtils;
 
 public class NettyServerBroadcast {
 

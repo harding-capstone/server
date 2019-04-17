@@ -1,6 +1,7 @@
 package com.shepherdjerred.capstone.server.events.handlers;
 
 import com.shepherdjerred.capstone.events.handlers.EventHandler;
+import com.shepherdjerred.capstone.network.packet.packets.CreatedPlayerPacket;
 import com.shepherdjerred.capstone.network.packet.packets.LobbyAction;
 import com.shepherdjerred.capstone.network.packet.packets.PlayerLobbyActionPacket;
 import com.shepherdjerred.capstone.server.GameServer;
@@ -21,6 +22,8 @@ public class PlayerJoinEventHandler implements EventHandler<PlayerJoinEvent> {
       var clientId = new ClientId(playerJoinEvent.getPlayer().getUuid());
       gameServer.addPlayer(clientId, playerJoinEvent.getPlayer());
       connectorHub.sendPacket(new PlayerLobbyActionPacket(playerJoinEvent.getPlayer(), LobbyAction.JOIN) {
+      });
+      connectorHub.sendPacket(clientId, new CreatedPlayerPacket(playerJoinEvent.getPlayer()) {
       });
     } catch (LobbyFullException e) {
       e.printStackTrace();
