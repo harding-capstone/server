@@ -5,7 +5,6 @@ import com.shepherdjerred.capstone.network.packet.packets.LobbyAction;
 import com.shepherdjerred.capstone.network.packet.packets.PlayerLobbyActionPacket;
 import com.shepherdjerred.capstone.server.GameServer;
 import com.shepherdjerred.capstone.server.events.events.PlayerEvictEvent;
-import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
 import lombok.AllArgsConstructor;
 
@@ -16,8 +15,7 @@ public class PlayerEvictEventHandler implements EventHandler<PlayerEvictEvent> {
 
   @Override
   public void handle(PlayerEvictEvent playerEvictEvent) {
-    var clientId = new ClientId(playerEvictEvent.getPlayer().getUuid());
-    gameServer.removePlayer(clientId, playerEvictEvent.getPlayer());
+    gameServer.removePlayer(playerEvictEvent.getPlayer());
     connectorHub.sendPacket(new PlayerLobbyActionPacket(playerEvictEvent.getPlayer(), LobbyAction.EVICT) {
     });
   }
