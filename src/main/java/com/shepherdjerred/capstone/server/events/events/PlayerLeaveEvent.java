@@ -1,6 +1,5 @@
 package com.shepherdjerred.capstone.server.events.events;
 
-
 import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
 import lombok.AllArgsConstructor;
@@ -12,6 +11,6 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class PlayerJoinEvent implements Event {
+public class PlayerLeaveEvent implements Event {
   private final Player player;
 }

@@ -1,11 +1,13 @@
 package com.shepherdjerred.capstone.server.events.handlers;
 
 import com.shepherdjerred.capstone.events.handlers.EventHandler;
-import com.shepherdjerred.capstone.network.packet.packets.PlayerDescriptionPacket;
-import com.shepherdjerred.capstone.network.packet.packets.PlayerJoinedPacket;
+import com.shepherdjerred.capstone.network.packet.packets.CreatedPlayerPacket;
+import com.shepherdjerred.capstone.network.packet.packets.LobbyAction;
+import com.shepherdjerred.capstone.network.packet.packets.PlayerLobbyActionPacket;
 import com.shepherdjerred.capstone.server.GameServer;
 import com.shepherdjerred.capstone.server.events.events.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.events.exception.LobbyFullException;
+import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
 import lombok.AllArgsConstructor;
 
@@ -17,8 +19,11 @@ public class PlayerJoinEventHandler implements EventHandler<PlayerJoinEvent> {
   @Override
   public void handle(PlayerJoinEvent playerJoinEvent) {
     try {
-      gameServer.addPlayer(playerJoinEvent.getClientId(), playerJoinEvent.getPlayer());
-      connectorHub.sendPacket(new PlayerJoinedPacket(playerJoinEvent.getPlayer()) {
+      var clientId = new ClientId(playerJoinEvent.getPlayer().getUuid());
+      gameServer.addPlayer(clientId, playerJoinEvent.getPlayer());
+      connectorHub.sendPacket(new PlayerLobbyActionPacket(playerJoinEvent.getPlayer(), LobbyAction.JOIN) {
+      });
+      connectorHub.sendPacket(clientId, new CreatedPlayerPacket(playerJoinEvent.getPlayer(), gameServer.getLobby()) {
       });
     } catch (LobbyFullException e) {
       e.printStackTrace();

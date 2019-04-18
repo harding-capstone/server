@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.events.events;
 
-
+import com.shepherdjerred.capstone.common.lobby.LobbySettings;
 import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
-public class PlayerJoinEvent implements Event {
+public class EditLobbyEvent implements Event {
+  private final LobbySettings lobbySettings;
   private final Player player;
 }

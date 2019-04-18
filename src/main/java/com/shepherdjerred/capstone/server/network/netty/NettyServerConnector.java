@@ -48,6 +48,13 @@ public class NettyServerConnector implements Connector {
         }
       }
     }).start();
+
+    new Thread(() -> {
+      while(true) {
+        var nettyServerBroadcast = new NettyServerBroadcast();
+        nettyServerBroadcast.broadcast(nettyServerSettings);
+      }
+    });
   }
 
   @Override
