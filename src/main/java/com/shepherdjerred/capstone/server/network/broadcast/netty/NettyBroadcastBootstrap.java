@@ -1,20 +1,15 @@
 package com.shepherdjerred.capstone.server.network.broadcast.netty;
 
-import static com.shepherdjerred.capstone.common.Constants.DISCOVERY_PORT;
-
 import com.shepherdjerred.capstone.common.lobby.LobbySettings;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
 import com.shepherdjerred.capstone.network.packet.packets.ServerBroadcastPacket;
-import com.shepherdjerred.capstone.server.event.events.LobbySettingsChangedEvent;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.log4j.Log4j2;
@@ -39,9 +34,7 @@ public class NettyBroadcastBootstrap implements Runnable {
   }
 
   private void registerEventHandlers() {
-    eventHandlerFrame.registerHandler(LobbySettingsChangedEvent.class,
-        lobbySettingsChangedEvent -> lobbySettings = lobbySettingsChangedEvent.getNewLobbySettings());
-
+    // TODO handle lobby changes
     eventBus.removeHandlerFrame(eventHandlerFrame);
   }
 
@@ -53,17 +46,15 @@ public class NettyBroadcastBootstrap implements Runnable {
       var bootstrap = new Bootstrap();
       bootstrap.group(eventLoopGroup)
           .channel(NioDatagramChannel.class)
-          .handler(new BroadcastChannelInitializer())
+          .handler(new NettyBroadcastInitializer())
           .option(ChannelOption.SO_BROADCAST, true)
           .option(ChannelOption.SO_REUSEADDR, true);
 
       var channel = bootstrap.bind(address).sync().channel();
 
       eventLoopGroup.scheduleAtFixedRate(() -> {
-        channel.writeAndFlush(new DatagramPacket())
-            channel.writeAndFlush(new ServerBroadcastPacket(lobbySettings),
-                new InetSocketAddress(DISCOVERY_PORT));
-            log.info("Writing packet");
+            log.info("Broadcasting");
+            channel.writeAndFlush(new ServerBroadcastPacket(lobbySettings));
           },
           0,
           2,

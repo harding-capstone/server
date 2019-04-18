@@ -10,7 +10,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class NettyConnection implements Connection {
 
-  private final QueueingChannelHandler handler;
+  private final ServerChannelHandler handler;
   @Getter
   private Status status = Status.CONNECTED;
 

@@ -11,6 +11,7 @@ public class NettyBroadcastHandler extends ChannelOutboundHandlerAdapter {
   @Override
   public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)
       throws Exception {
-    
+    log.info("Calling write... " + msg);
+    super.write(ctx, msg, promise);
   }
 }
