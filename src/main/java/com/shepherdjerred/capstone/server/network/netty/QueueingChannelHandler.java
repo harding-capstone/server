@@ -1,10 +1,10 @@
 package com.shepherdjerred.capstone.server.network.netty;
 
 import com.shepherdjerred.capstone.network.packet.packets.Packet;
-import com.shepherdjerred.capstone.server.events.events.network.ClientConnectedEvent;
-import com.shepherdjerred.capstone.server.events.events.network.ClientDisconnectedEvent;
-import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
-import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
+import com.shepherdjerred.capstone.server.event.events.network.ClientConnectedEvent;
+import com.shepherdjerred.capstone.server.event.events.network.ClientDisconnectedEvent;
+import com.shepherdjerred.capstone.server.event.events.network.NetworkEvent;
+import com.shepherdjerred.capstone.server.event.events.network.PacketReceivedEvent;
 import com.shepherdjerred.capstone.server.network.ClientId;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Forwards channel events as events in a queue.
+ * Forwards channel event as event in a queue.
  */
 @Log4j2
 @RequiredArgsConstructor

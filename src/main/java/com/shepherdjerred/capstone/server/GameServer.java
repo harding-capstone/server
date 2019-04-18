@@ -2,6 +2,7 @@ package com.shepherdjerred.capstone.server;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.shepherdjerred.capstone.common.GameState;
 import com.shepherdjerred.capstone.common.chat.ChatHistory;
 import com.shepherdjerred.capstone.common.chat.ChatMessage;
 import com.shepherdjerred.capstone.common.lobby.Lobby;
@@ -13,86 +14,95 @@ import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventLoggerHandler;
 import com.shepherdjerred.capstone.logic.match.Match;
 import com.shepherdjerred.capstone.logic.turn.Turn;
-import com.shepherdjerred.capstone.server.events.events.EditLobbyEvent;
-import com.shepherdjerred.capstone.server.events.events.HostLeaveEvent;
-import com.shepherdjerred.capstone.server.events.events.PlayerChatEvent;
-import com.shepherdjerred.capstone.server.events.events.PlayerEvictEvent;
-import com.shepherdjerred.capstone.server.events.events.PlayerJoinEvent;
-import com.shepherdjerred.capstone.server.events.events.PlayerLeaveEvent;
-import com.shepherdjerred.capstone.server.events.events.StartGameEvent;
-import com.shepherdjerred.capstone.server.events.events.TurnEvent;
-import com.shepherdjerred.capstone.server.events.events.network.ClientConnectedEvent;
-import com.shepherdjerred.capstone.server.events.events.network.ClientDisconnectedEvent;
-import com.shepherdjerred.capstone.server.events.events.network.PacketReceivedEvent;
-import com.shepherdjerred.capstone.server.events.exception.LobbyFullException;
-import com.shepherdjerred.capstone.server.events.handlers.ClientConnectedEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.ClientDisconnectedEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.EditLobbyEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.HostLeaveEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.PacketReceivedEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.PlayerChatEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.PlayerEvictEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.PlayerJoinEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.PlayerLeaveEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.StartGameEventHandler;
-import com.shepherdjerred.capstone.server.events.handlers.TurnEventHandler;
+import com.shepherdjerred.capstone.server.event.events.EditLobbyEvent;
+import com.shepherdjerred.capstone.server.event.events.HostLeaveEvent;
+import com.shepherdjerred.capstone.server.event.events.PlayerChatEvent;
+import com.shepherdjerred.capstone.server.event.events.PlayerEvictEvent;
+import com.shepherdjerred.capstone.server.event.events.PlayerJoinEvent;
+import com.shepherdjerred.capstone.server.event.events.PlayerLeaveEvent;
+import com.shepherdjerred.capstone.server.event.events.StartGameEvent;
+import com.shepherdjerred.capstone.server.event.events.TurnEvent;
+import com.shepherdjerred.capstone.server.event.events.network.ClientConnectedEvent;
+import com.shepherdjerred.capstone.server.event.events.network.ClientDisconnectedEvent;
+import com.shepherdjerred.capstone.server.event.events.network.PacketReceivedEvent;
+import com.shepherdjerred.capstone.server.event.exception.LobbyFullException;
+import com.shepherdjerred.capstone.server.event.handlers.ClientConnectedEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.ClientDisconnectedEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.EditLobbyEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.HostLeaveEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.PacketReceivedEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.PlayerChatEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.PlayerEvictEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.PlayerJoinEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.PlayerLeaveEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.StartGameEventHandler;
+import com.shepherdjerred.capstone.server.event.handlers.TurnEventHandler;
 import com.shepherdjerred.capstone.server.network.ClientId;
 import com.shepherdjerred.capstone.server.network.Connector;
 import com.shepherdjerred.capstone.server.network.ConnectorHub;
-import lombok.Getter;
-import lombok.Setter;
+import com.shepherdjerred.capstone.server.network.broadcast.ServerBroadcast;
+import com.shepherdjerred.capstone.server.network.broadcast.netty.NettyBroadcast;
+import java.util.Optional;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @ToString
-public class GameServer {
+public class GameServer implements Runnable {
 
-  @Getter
-  private ChatHistory chatHistory;
   private final ConnectorHub connectorHub;
-  private final EventBus<Event> eventQueue;
+  private final EventBus<Event> eventBus;
   private final BiMap<ClientId, Player> handlePlayerMap;
-  @Getter
-  private Lobby lobby;
-  @Getter
-  @Setter
-  private Match match;
+  private GameState gameState;
+  private ServerBroadcast serverBroadcast;
 
-  public GameServer(LobbySettings lobbySettings) {
-    this.chatHistory = new ChatHistory();
-    this.eventQueue = new EventBus<>();
-    this.connectorHub = new ConnectorHub(eventQueue);
+  public GameServer() {
+    this.eventBus = new EventBus<>();
+    this.connectorHub = new ConnectorHub(eventBus);
+    this.gameState = new GameState(Lobby.fromDefaultLobbySettings(), null, new ChatHistory());
     handlePlayerMap = HashBiMap.create();
-    lobby = Lobby.from(lobbySettings);
+    serverBroadcast = new NettyBroadcast(eventBus, gameState.getLobby().getLobbySettings());
     registerNetworkEventHandlers();
     registerEventHandlers();
   }
 
-  public void MakeTurn(Turn turn) {
-    match.doTurn(turn);
+  public void broadcast() {
+    new Thread(serverBroadcast, "BROADCAST").start();
   }
 
-  public void updateLobby(LobbySettings lobbySettings) {
-   lobby = lobby.UpdateLobbySettings(lobbySettings);
+  public void createMatch() {
+    var boardSettings = gameState.getLobby().getLobbySettings().getBoardSettings();
+    var matchSettings = gameState.getLobby().getLobbySettings().getMatchSettings();
+    gameState.setMatch(Match.from(matchSettings, boardSettings));
   }
 
-  public void addChatMessage(ChatMessage message) {
-    chatHistory = chatHistory.addMessage(message);
+  public Optional<Element> getFreeElement() {
+    return gameState.getLobby().getFreeElement();
+  }
+
+  public boolean hasMatchStarted() {
+    return gameState.getMatch() != null;
+  }
+
+  public void doTurn(Turn turn) {
+    gameState = gameState.setMatch(gameState.getMatch().doTurn(turn));
+  }
+
+  public void updateLobbySettings(LobbySettings lobbySettings) {
+    gameState = gameState.setLobby(gameState.getLobby().setLobbySettings(lobbySettings));
+  }
+
+  public void addMessage(ChatMessage message) {
+    gameState = gameState.setChatHistory(gameState.getChatHistory().addMessage(message));
   }
 
   public void addPlayer(ClientId clientId, Player player) throws LobbyFullException {
-    if (!lobby.isFull()) {
+    if (gameState.getLobby().hasFreeSlot()) {
       handlePlayerMap.put(clientId, player);
-      lobby.addPlayer(player);
+      gameState = gameState.setLobby(gameState.getLobby().addPlayer(player));
     } else {
       throw new LobbyFullException();
     }
-
-  }
-
-  public Element getNextElement() {
-    return lobby.getNextElement();
   }
 
   public void removePlayer(ClientId clientId) {
@@ -100,61 +110,61 @@ public class GameServer {
   }
 
   public void removePlayer(ClientId clientId, Player player) {
-      handlePlayerMap.remove(clientId, player);
-      lobby.removePlayer(player);
+    handlePlayerMap.remove(clientId, player);
+    gameState = gameState.setLobby(gameState.getLobby().removePlayer(player));
   }
 
   public void removePlayer(Player player) {
     removePlayer(handlePlayerMap.inverse().get(player), player);
   }
 
-
   private void registerNetworkEventHandlers() {
-    eventQueue.registerHandler(new EventLoggerHandler<>());
-    eventQueue.registerHandler(ClientConnectedEvent.class,
+    eventBus.registerHandler(new EventLoggerHandler<>());
+    eventBus.registerHandler(ClientConnectedEvent.class,
         new ClientConnectedEventHandler(connectorHub));
-    eventQueue.registerHandler(ClientDisconnectedEvent.class,
+    eventBus.registerHandler(ClientDisconnectedEvent.class,
         new ClientDisconnectedEventHandler(this, connectorHub));
-    eventQueue.registerHandler(PacketReceivedEvent.class,
+    eventBus.registerHandler(PacketReceivedEvent.class,
         new PacketReceivedEventHandler(this));
   }
 
   private void registerEventHandlers() {
-    eventQueue.registerHandler(PacketReceivedEvent.class,
+    eventBus.registerHandler(PacketReceivedEvent.class,
         new PacketReceivedEventHandler(this));
-    eventQueue.registerHandler(PlayerChatEvent.class,
+    eventBus.registerHandler(PlayerChatEvent.class,
         new PlayerChatEventHandler(this, connectorHub));
-    eventQueue.registerHandler(ClientDisconnectedEvent.class,
+    eventBus.registerHandler(ClientDisconnectedEvent.class,
         new ClientDisconnectedEventHandler(this, connectorHub));
-    eventQueue.registerHandler(EditLobbyEvent.class,
+    eventBus.registerHandler(EditLobbyEvent.class,
         new EditLobbyEventHandler(this, connectorHub));
-    eventQueue.registerHandler(HostLeaveEvent.class,
+    eventBus.registerHandler(HostLeaveEvent.class,
         new HostLeaveEventHandler(this, connectorHub));
-    eventQueue.registerHandler(PlayerEvictEvent.class,
+    eventBus.registerHandler(PlayerEvictEvent.class,
         new PlayerEvictEventHandler(this, connectorHub));
-    eventQueue.registerHandler(PlayerJoinEvent.class,
+    eventBus.registerHandler(PlayerJoinEvent.class,
         new PlayerJoinEventHandler(this, connectorHub));
-    eventQueue.registerHandler(PlayerLeaveEvent.class,
+    eventBus.registerHandler(PlayerLeaveEvent.class,
         new PlayerLeaveEventHandler(this, connectorHub));
-    eventQueue.registerHandler(StartGameEvent.class,
-        new StartGameEventHandler(this, connectorHub));
-    eventQueue.registerHandler(TurnEvent.class,
+    eventBus.registerHandler(StartGameEvent.class,
+        new StartGameEventHandler(connectorHub));
+    eventBus.registerHandler(TurnEvent.class,
         new TurnEventHandler(this, connectorHub));
   }
 
-  public void run() throws InterruptedException {
+  @Override
+  public void run() {
     final int ticksPerSecond = 10;
     final int millisecondsPerSecond = 1000;
     final int sleepMilliseconds = millisecondsPerSecond / ticksPerSecond;
 
     while (true) {
-      process();
-      Thread.sleep(sleepMilliseconds);
+      connectorHub.handleLatestEvents();
+      try {
+        Thread.sleep(sleepMilliseconds);
+      } catch (InterruptedException e) {
+        log.error(e);
+      }
     }
-  }
-
-  private void process() {
-    connectorHub.handleLatestEvents();
   }
 
   public void registerConnector(Connector connector) {
@@ -162,7 +172,7 @@ public class GameServer {
   }
 
   public void dispatch(Event event) {
-    eventQueue.dispatch(event);
+    eventBus.dispatch(event);
   }
 
   public Player getPlayerByClientId(ClientId clientId) {

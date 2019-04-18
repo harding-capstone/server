@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.network;
 
-import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
+import com.shepherdjerred.capstone.server.event.events.network.NetworkEvent;
 
 public interface Connector {
 

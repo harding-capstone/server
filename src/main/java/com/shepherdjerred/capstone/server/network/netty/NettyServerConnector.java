@@ -1,7 +1,7 @@
 package com.shepherdjerred.capstone.server.network.netty;
 
 import com.shepherdjerred.capstone.server.network.Connector;
-import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
+import com.shepherdjerred.capstone.server.event.events.network.NetworkEvent;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -48,13 +48,6 @@ public class NettyServerConnector implements Connector {
         }
       }
     }).start();
-
-    new Thread(() -> {
-      while(true) {
-        var nettyServerBroadcast = new NettyServerBroadcast();
-        nettyServerBroadcast.broadcast(nettyServerSettings);
-      }
-    });
   }
 
   @Override

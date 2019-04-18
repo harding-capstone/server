@@ -4,7 +4,7 @@ import com.shepherdjerred.capstone.network.netty.PacketCodec;
 import com.shepherdjerred.capstone.network.netty.handlers.ExceptionLoggerHandler;
 import com.shepherdjerred.capstone.network.packet.serialization.PacketJsonSerializer;
 import com.shepherdjerred.capstone.server.network.ClientId;
-import com.shepherdjerred.capstone.server.events.events.network.NetworkEvent;
+import com.shepherdjerred.capstone.server.event.events.network.NetworkEvent;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
