@@ -5,7 +5,7 @@ import com.shepherdjerred.capstone.server.event.events.network.ClientConnectedEv
 import com.shepherdjerred.capstone.server.event.events.network.ClientDisconnectedEvent;
 import com.shepherdjerred.capstone.server.event.events.network.NetworkEvent;
 import com.shepherdjerred.capstone.server.event.events.network.PacketReceivedEvent;
-import com.shepherdjerred.capstone.server.network.ClientId;
+import com.shepherdjerred.capstone.server.network.Connection;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,20 +21,22 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class ServerChannelHandler extends ChannelInboundHandlerAdapter {
 
+  private Connection connection;
   private ChannelHandlerContext context;
-  private final ClientId clientId;
   private final ConcurrentLinkedQueue<NetworkEvent> eventQueue;
 
   @Override
   public void channelActive(ChannelHandlerContext context) {
     this.context = context;
-    eventQueue.add(new ClientConnectedEvent(clientId, new NettyConnection(this)));
+    connection = new NettyConnection(this);
+    eventQueue.add(new ClientConnectedEvent(connection));
   }
 
   @Override
   public void channelRead(ChannelHandlerContext context, Object message) {
     var packet = (Packet) message;
-    eventQueue.add(new PacketReceivedEvent(clientId, packet));
+    var event = new PacketReceivedEvent(connection, packet);
+    eventQueue.add(event);
   }
 
   @Override
@@ -45,7 +47,7 @@ public class ServerChannelHandler extends ChannelInboundHandlerAdapter {
 
   @Override
   public void channelInactive(ChannelHandlerContext ctx) {
-    eventQueue.add(new ClientDisconnectedEvent(clientId));
+    eventQueue.add(new ClientDisconnectedEvent(connection));
   }
 
   public void send(Object object) {

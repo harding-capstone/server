@@ -54,7 +54,7 @@ public class NettyBroadcastBootstrap implements Runnable {
 
       eventLoopGroup.scheduleAtFixedRate(() -> {
             log.info("Broadcasting");
-            channel.writeAndFlush(new ServerBroadcastPacket(lobbySettings));
+            channel.writeAndFlush(new ServerBroadcastPacket(null));
           },
           0,
           2,

@@ -7,6 +7,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import java.net.SocketAddress;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -25,7 +26,8 @@ public class NettyServerBootstrap implements Runnable {
 
   @Override
   public void run() {
-    EventLoopGroup group = new NioEventLoopGroup();
+    EventLoopGroup group = new NioEventLoopGroup(0,
+        new DefaultThreadFactory("SERVER_NETWORK_THREAD_POOL"));
 
     try {
       ServerBootstrap serverBootstrap = new ServerBootstrap()

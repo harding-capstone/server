@@ -1,7 +1,6 @@
 package com.shepherdjerred.capstone.server;
 
 import com.shepherdjerred.capstone.common.Constants;
-import com.shepherdjerred.capstone.server.client.Client;
 import java.net.InetSocketAddress;
 import lombok.extern.log4j.Log4j2;
 import org.junit.Test;
@@ -13,7 +12,6 @@ public class ServerTest {
   public void doTest() {
     var server = new GameServer(new InetSocketAddress(Constants.GAME_PORT),
         new InetSocketAddress(Constants.DISCOVERY_PORT));
-    var client = new Client();
 
     server.run();
   }
