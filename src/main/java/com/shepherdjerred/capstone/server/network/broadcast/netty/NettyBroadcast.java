@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.network.broadcast.netty;
 
-import com.shepherdjerred.capstone.common.lobby.LobbySettings;
+import com.shepherdjerred.capstone.common.lobby.Lobby;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.server.network.broadcast.ServerBroadcast;
@@ -14,10 +14,10 @@ public class NettyBroadcast implements ServerBroadcast {
 
   private final SocketAddress address;
   private final EventBus<Event> eventBus;
-  private final LobbySettings lobbySettings;
+  private final Lobby lobby;
 
   @Override
   public void run() {
-    new NettyBroadcastBootstrap(address, lobbySettings, eventBus).run();
+    new NettyBroadcastBootstrap(address, lobby, eventBus).run();
   }
 }

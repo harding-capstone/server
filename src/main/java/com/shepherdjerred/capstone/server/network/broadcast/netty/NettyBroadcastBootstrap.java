@@ -1,6 +1,6 @@
 package com.shepherdjerred.capstone.server.network.broadcast.netty;
 
-import com.shepherdjerred.capstone.common.lobby.LobbySettings;
+import com.shepherdjerred.capstone.common.lobby.Lobby;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
@@ -20,15 +20,15 @@ public class NettyBroadcastBootstrap implements Runnable {
   private final SocketAddress address;
   private final EventBus<Event> eventBus;
   private EventLoopGroup eventLoopGroup;
-  private LobbySettings lobbySettings;
+  private Lobby lobby;
   private final EventHandlerFrame<Event> eventHandlerFrame;
 
   public NettyBroadcastBootstrap(SocketAddress address,
-      LobbySettings lobbySettings,
+      Lobby lobby,
       EventBus<Event> eventBus) {
     this.address = address;
     this.eventBus = eventBus;
-    this.lobbySettings = lobbySettings;
+    this.lobby = lobby;
     this.eventHandlerFrame = new EventHandlerFrame<>();
     registerEventHandlers();
   }
@@ -54,7 +54,7 @@ public class NettyBroadcastBootstrap implements Runnable {
 
       eventLoopGroup.scheduleAtFixedRate(() -> {
             log.info("Broadcasting");
-            channel.writeAndFlush(new ServerBroadcastPacket(null));
+            channel.writeAndFlush(new ServerBroadcastPacket(lobby));
           },
           0,
           2,

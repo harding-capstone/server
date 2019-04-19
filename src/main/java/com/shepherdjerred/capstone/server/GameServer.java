@@ -48,10 +48,10 @@ public class GameServer implements Runnable {
     playerMap = HashBiMap.create();
     eventBus = new EventBus<>();
     serverState = new LobbyServerState(this, eventBus);
-    gameState = new GameState(Lobby.fromDefaultLobbySettings(), null, new ChatHistory());
+    gameState = new GameState(Lobby.fromDefaultLobbySettings("My Lobby"), null, new ChatHistory());
     serverBroadcast = new NettyBroadcast(broadcastAddress,
         eventBus,
-        gameState.getLobby().getLobbySettings());
+        gameState.getLobby());
     bootstrap = new NettyServerBootstrap(serverAddress);
     networkThread = new Thread(bootstrap, "SERVER_NETWORK_THREAD");
     discoveryThread = new Thread(serverBroadcast, "DISCOVERY_THREAD");

@@ -19,17 +19,10 @@ public class BroadcastPacketEncoder extends MessageToMessageEncoder<Packet> {
 
   @Override
   protected void encode(ChannelHandlerContext ctx, Packet packet, List<Object> out) {
-    log.info("what 1");
     var packetAsBytes = serializer.toBytes(packet);
-    var size = packetAsBytes.length;
 
-    log.info("what 2");
-    var buffer = ctx.alloc().buffer(size + 4);
-    buffer.writeInt(size);
+    var buffer = ctx.alloc().buffer(packetAsBytes.length);
     buffer.writeBytes(packetAsBytes);
-
-    log.info("what 3");
-    log.info(buffer);
 
     var datagramPacket = new DatagramPacket(buffer, address);
     out.add(datagramPacket);
