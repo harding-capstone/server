@@ -5,6 +5,7 @@ import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
 import com.shepherdjerred.capstone.server.event.PlayerInformationReceivedEvent;
+import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.game.GameLogic;
 
 public class LobbyState extends AbstractGameServerState {
@@ -37,6 +38,8 @@ public class LobbyState extends AbstractGameServerState {
       var player = new HumanPlayer(playerInformation.getUuid(),
           playerInformation.getName(),
           element.get());
+
+      eventBus.dispatch(new PlayerJoinEvent(player, event.getConnection()));
     });
 
     return frame;

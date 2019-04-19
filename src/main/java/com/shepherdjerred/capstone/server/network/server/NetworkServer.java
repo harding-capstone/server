@@ -3,25 +3,61 @@ package com.shepherdjerred.capstone.server.network.server;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.shepherdjerred.capstone.common.player.Player;
+import com.shepherdjerred.capstone.events.Event;
+import com.shepherdjerred.capstone.events.EventBus;
+import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
 import com.shepherdjerred.capstone.network.packet.packets.Packet;
+import com.shepherdjerred.capstone.network.packet.packets.PlayerJoinPacket;
+import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
+import com.shepherdjerred.capstone.server.network.server.netty.NettyServerBootstrap;
+import java.net.SocketAddress;
 
-public class NetworkServer {
+public class NetworkServer implements Runnable {
 
+  private final EventBus<Event> eventBus;
+  private final NettyServerBootstrap bootstrap;
   private final BiMap<Player, Connection> playerMap;
 
-  public NetworkServer() {
+  public NetworkServer(EventBus<Event> eventBus, SocketAddress address) {
+    this.eventBus = eventBus;
+    bootstrap = new NettyServerBootstrap(address);
     playerMap = HashBiMap.create();
+    registerHandlers();
   }
 
-  public void setPlayerConnection(Player player, Connection connection) {
+  private void registerHandlers() {
+    var frame = new EventHandlerFrame<>();
+
+    frame.registerHandler(PlayerJoinEvent.class, (event) -> {
+      send(new PlayerJoinPacket(event.getPlayer()));
+    });
+
+    eventBus.registerHandlerFrame(frame);
+  }
+
+  private void setPlayerConnection(Player player, Connection connection) {
     playerMap.put(player, connection);
   }
 
-  public Connection getConnection(Player player) {
+  private Connection getConnection(Player player) {
     return playerMap.get(player);
   }
 
-  public void send(Packet packet) {
+  private void send(Packet packet) {
     playerMap.values().forEach(connection -> connection.sendPacket(packet));
+  }
+
+  public void update() {
+    var event = bootstrap.getNextEvent();
+    event.ifPresent(eventBus::dispatch);
+  }
+
+  public void shutdown() {
+    bootstrap.shutdown();
+  }
+
+  @Override
+  public void run() {
+    bootstrap.run();
   }
 }

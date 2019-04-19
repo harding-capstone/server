@@ -8,8 +8,10 @@ import com.shepherdjerred.capstone.server.network.broadcast.netty.NettyBroadcast
 import com.shepherdjerred.capstone.server.network.event.events.PacketReceivedEvent;
 import com.shepherdjerred.capstone.server.network.event.handlers.PacketReceivedEventHandler;
 import com.shepherdjerred.capstone.server.network.manager.events.StartBroadcastEvent;
+import com.shepherdjerred.capstone.server.network.manager.events.StartNetworkEvent;
 import com.shepherdjerred.capstone.server.network.manager.events.StopBroadcastEvent;
-import com.shepherdjerred.capstone.server.network.server.netty.NettyServerBootstrap;
+import com.shepherdjerred.capstone.server.network.manager.events.StopNetworkEvent;
+import com.shepherdjerred.capstone.server.network.server.NetworkServer;
 import java.net.SocketAddress;
 
 public class NetworkManager {
@@ -17,7 +19,7 @@ public class NetworkManager {
   private final SocketAddress broadcastAddress;
   private final SocketAddress gameAddress;
   private final EventBus<Event> eventBus;
-  private NettyServerBootstrap networkBootstrap;
+  private NetworkServer networkServer;
   private ServerBroadcast serverBroadcast;
   private Thread networkThread;
   private Thread broadcastThread;
@@ -28,24 +30,30 @@ public class NetworkManager {
     this.broadcastAddress = broadcastAddress;
     this.gameAddress = gameAddress;
     this.eventBus = eventBus;
-
+    createEventHandlers();
   }
 
   private void createEventHandlers() {
     eventBus.registerHandler(PacketReceivedEvent.class, new PacketReceivedEventHandler(eventBus));
 
     eventBus.registerHandler(StartBroadcastEvent.class, (event) -> {
-
+      startBroadcast(event.getLobby());
     });
-
     eventBus.registerHandler(StopBroadcastEvent.class, (event) -> {
-
+      stopBroadcast();
+    });
+    eventBus.registerHandler(StartNetworkEvent.class, (event) -> {
+      startNetwork();
+    });
+    eventBus.registerHandler(StopNetworkEvent.class, (event) -> {
+      stopNetwork();
     });
   }
 
   private void startBroadcast(Lobby lobby) {
     serverBroadcast = new NettyBroadcast(broadcastAddress, eventBus, lobby);
     broadcastThread = new Thread(serverBroadcast, "BROADCAST");
+    broadcastThread.start();
   }
 
   private void stopBroadcast() {
@@ -53,16 +61,16 @@ public class NetworkManager {
   }
 
   private void startNetwork() {
-    networkBootstrap = new NettyServerBootstrap(gameAddress);
-    networkThread = new Thread(networkBootstrap, "NETWORK");
+    networkServer = new NetworkServer(eventBus, gameAddress);
+    networkThread = new Thread(networkServer, "NETWORK");
+    networkThread.start();
   }
 
   private void stopNetwork() {
-    networkBootstrap.shutdown();
+    networkServer.shutdown();
   }
 
   public void update() {
-    var event = networkBootstrap.getNextEvent();
-    event.ifPresent(eventBus::dispatch);
+    networkServer.update();
   }
 }

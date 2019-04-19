@@ -7,6 +7,7 @@ import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
 import com.shepherdjerred.capstone.server.event.PlayerInformationReceivedEvent;
+import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.game.GameLogic;
 import com.shepherdjerred.capstone.server.network.manager.events.StartBroadcastEvent;
 
@@ -27,13 +28,16 @@ public class PreLobbyState extends AbstractGameServerState {
           playerInformation.getName(),
           Element.ICE);
 
+      eventBus.dispatch(new PlayerJoinEvent(player, event.getConnection()));
+
       gameLogic.setHost(player);
       gameLogic.transitionState(new LobbyState(gameLogic, eventBus));
 
-      var lobbyType = gameLogic.getGameState().getLobby().getLobbySettings().getLobbyType();
+      var lobby = gameLogic.getGameState().getLobby();
+      var lobbyType = lobby.getLobbySettings().getLobbyType();
 
       if (lobbyType == LobbyType.NETWORK) {
-        eventBus.dispatch(new StartBroadcastEvent());
+        eventBus.dispatch(new StartBroadcastEvent(lobby));
       }
     });
 

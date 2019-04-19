@@ -7,6 +7,8 @@ import com.shepherdjerred.capstone.events.handlers.EventLoggerHandler;
 import com.shepherdjerred.capstone.server.game.GameLogic;
 import com.shepherdjerred.capstone.server.network.manager.NetworkManager;
 import com.shepherdjerred.capstone.server.network.manager.events.StartNetworkEvent;
+import com.shepherdjerred.capstone.server.network.manager.events.StopBroadcastEvent;
+import com.shepherdjerred.capstone.server.network.manager.events.StopNetworkEvent;
 import java.net.SocketAddress;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
@@ -51,5 +53,10 @@ public class GameServer implements Runnable {
         log.error(e);
       }
     }
+  }
+
+  public void shutdown() {
+    eventBus.dispatch(new StopBroadcastEvent());
+    eventBus.dispatch(new StopNetworkEvent());
   }
 }
