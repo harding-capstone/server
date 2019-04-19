@@ -1,4 +1,4 @@
-package com.shepherdjerred.capstone.server.network;
+package com.shepherdjerred.capstone.server.network.server;
 
 
 import com.shepherdjerred.capstone.network.packet.packets.Packet;

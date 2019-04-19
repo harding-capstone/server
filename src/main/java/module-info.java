@@ -11,5 +11,5 @@ module com.shepherdjerred.capstone.server {
   requires gson.extras;
 
   exports com.shepherdjerred.capstone.server;
-  exports com.shepherdjerred.capstone.server.network.netty;
+  exports com.shepherdjerred.capstone.server.network.server.netty;
 }

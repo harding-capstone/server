@@ -5,19 +5,25 @@ import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.server.network.broadcast.ServerBroadcast;
 import java.net.SocketAddress;
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@AllArgsConstructor
 public class NettyBroadcast implements ServerBroadcast {
 
-  private final SocketAddress address;
-  private final EventBus<Event> eventBus;
-  private final Lobby lobby;
+  private final NettyBroadcastBootstrap bootstrap;
+
+  public NettyBroadcast(SocketAddress address,
+      EventBus<Event> eventBus, Lobby lobby) {
+    bootstrap = new NettyBroadcastBootstrap(address, lobby, eventBus);
+  }
 
   @Override
   public void run() {
-    new NettyBroadcastBootstrap(address, lobby, eventBus).run();
+    bootstrap.run();
+  }
+
+  @Override
+  public void stop() {
+    bootstrap.shutdown();
   }
 }

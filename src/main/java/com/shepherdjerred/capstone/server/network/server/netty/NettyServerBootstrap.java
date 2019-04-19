@@ -1,6 +1,6 @@
-package com.shepherdjerred.capstone.server.network.netty;
+package com.shepherdjerred.capstone.server.network.server.netty;
 
-import com.shepherdjerred.capstone.server.event.events.network.NetworkEvent;
+import com.shepherdjerred.capstone.server.network.event.events.NetworkEvent;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -18,6 +18,7 @@ public class NettyServerBootstrap implements Runnable {
 
   private final ConcurrentLinkedQueue<NetworkEvent> eventQueue;
   private final SocketAddress address;
+  private EventLoopGroup group;
 
   public NettyServerBootstrap(SocketAddress address) {
     this.address = address;
@@ -26,7 +27,7 @@ public class NettyServerBootstrap implements Runnable {
 
   @Override
   public void run() {
-    EventLoopGroup group = new NioEventLoopGroup(0,
+    group = new NioEventLoopGroup(0,
         new DefaultThreadFactory("SERVER_NETWORK_THREAD_POOL"));
 
     try {
@@ -42,11 +43,7 @@ public class NettyServerBootstrap implements Runnable {
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      try {
-        group.shutdownGracefully().sync();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      shutdown();
     }
   }
 
@@ -56,5 +53,9 @@ public class NettyServerBootstrap implements Runnable {
     } else {
       return Optional.empty();
     }
+  }
+
+  public void shutdown() {
+    group.shutdownGracefully().syncUninterruptibly();
   }
 }

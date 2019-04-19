@@ -5,11 +5,13 @@ import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
 import com.shepherdjerred.capstone.network.packet.packets.ServerBroadcastPacket;
+import com.shepherdjerred.capstone.server.event.LobbyUpdatedEvent;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +21,7 @@ public class NettyBroadcastBootstrap implements Runnable {
 
   private final SocketAddress address;
   private final EventBus<Event> eventBus;
-  private EventLoopGroup eventLoopGroup;
+  private EventLoopGroup group;
   private Lobby lobby;
   private final EventHandlerFrame<Event> eventHandlerFrame;
 
@@ -30,21 +32,23 @@ public class NettyBroadcastBootstrap implements Runnable {
     this.eventBus = eventBus;
     this.lobby = lobby;
     this.eventHandlerFrame = new EventHandlerFrame<>();
-    registerEventHandlers();
+    createHandlerFrame();
+    eventBus.registerHandlerFrame(eventHandlerFrame);
   }
 
-  private void registerEventHandlers() {
-    // TODO handle lobby changes
-    eventBus.removeHandlerFrame(eventHandlerFrame);
+  private void createHandlerFrame() {
+    eventHandlerFrame.registerHandler(LobbyUpdatedEvent.class,
+        (event) -> lobby = event.getNewLobby());
   }
 
   @Override
   public void run() {
-    eventLoopGroup = new NioEventLoopGroup();
+    group = new NioEventLoopGroup(0,
+        new DefaultThreadFactory("SERVER_BROADCAST_THREAD_POOL"));
 
     try {
       var bootstrap = new Bootstrap();
-      bootstrap.group(eventLoopGroup)
+      bootstrap.group(group)
           .channel(NioDatagramChannel.class)
           .handler(new NettyBroadcastInitializer())
           .option(ChannelOption.SO_BROADCAST, true)
@@ -52,8 +56,8 @@ public class NettyBroadcastBootstrap implements Runnable {
 
       var channel = bootstrap.bind(address).sync().channel();
 
-      eventLoopGroup.scheduleAtFixedRate(() -> {
-            log.info("Broadcasting");
+      group.scheduleAtFixedRate(() -> {
+            log.trace("Broadcasting: " + lobby);
             channel.writeAndFlush(new ServerBroadcastPacket(lobby));
           },
           0,
@@ -65,11 +69,12 @@ public class NettyBroadcastBootstrap implements Runnable {
     } catch (InterruptedException e) {
       log.error(e);
     } finally {
-      cleanup();
+      shutdown();
     }
   }
 
-  public void cleanup() {
-    eventLoopGroup.shutdownGracefully().syncUninterruptibly();
+  public void shutdown() {
+    eventBus.removeHandlerFrame(eventHandlerFrame);
+    group.shutdownGracefully().syncUninterruptibly();
   }
 }

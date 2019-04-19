@@ -1,7 +1,7 @@
-package com.shepherdjerred.capstone.server.event.handlers;
+package com.shepherdjerred.capstone.server.network.event.handlers;
 
 import com.shepherdjerred.capstone.events.handlers.EventHandler;
-import com.shepherdjerred.capstone.server.event.events.network.ClientDisconnectedEvent;
+import com.shepherdjerred.capstone.server.network.event.events.ClientDisconnectedEvent;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

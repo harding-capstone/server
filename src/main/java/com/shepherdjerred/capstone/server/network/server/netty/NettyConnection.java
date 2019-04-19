@@ -1,7 +1,7 @@
-package com.shepherdjerred.capstone.server.network.netty;
+package com.shepherdjerred.capstone.server.network.server.netty;
 
 import com.shepherdjerred.capstone.network.packet.packets.Packet;
-import com.shepherdjerred.capstone.server.network.Connection;
+import com.shepherdjerred.capstone.server.network.server.Connection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
