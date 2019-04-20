@@ -26,7 +26,6 @@ public class ServerChannelHandler extends ChannelDuplexHandler {
 
   @Override
   public void channelActive(ChannelHandlerContext context) {
-    log.info("Client connected");
     this.channel = context.pipeline().channel();
     connection = new NettyConnection(this);
     eventQueue.add(new ClientConnectedEvent(connection));

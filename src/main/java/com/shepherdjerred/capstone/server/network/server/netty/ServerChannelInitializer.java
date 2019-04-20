@@ -20,8 +20,6 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
   @Override
   protected void initChannel(SocketChannel socketChannel) {
-    log.info("Creating channel...");
-
     var pipeline = socketChannel.pipeline();
     var serializer = new PacketJsonSerializer();
 

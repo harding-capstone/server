@@ -31,6 +31,7 @@ public class NetworkServer implements Runnable {
     var frame = new EventHandlerFrame<>();
 
     frame.registerHandler(PlayerJoinEvent.class, (event) -> {
+      setPlayerConnection(event.getPlayer(), event.getConnection());
       send(new PlayerJoinPacket(event.getPlayer()));
     });
 
