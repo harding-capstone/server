@@ -22,6 +22,7 @@ public class GameLogic {
     this.eventBus = eventBus;
     this.gameServerState = new PreLobbyState(this, eventBus);
     this.gameState = gameState;
+    gameServerState.enable();
   }
 
   public boolean hasHost() {

@@ -2,6 +2,7 @@ package com.shepherdjerred.capstone.server.network.broadcast.netty;
 
 import static com.shepherdjerred.capstone.common.Constants.DISCOVERY_PORT;
 
+import com.shepherdjerred.capstone.network.netty.handlers.ExceptionLoggerHandler;
 import com.shepherdjerred.capstone.network.packet.serialization.PacketJsonSerializer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -22,5 +23,6 @@ public class NettyBroadcastInitializer extends ChannelInitializer<NioDatagramCha
     pipeline.addLast(new BroadcastPacketEncoder(new InetSocketAddress("255.255.255.255",
         DISCOVERY_PORT), serializer));
     pipeline.addLast(new LoggingHandler());
+    pipeline.addLast(new ExceptionLoggerHandler());
   }
 }

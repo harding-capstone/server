@@ -6,11 +6,9 @@ import com.shepherdjerred.capstone.server.network.event.events.ClientDisconnecte
 import com.shepherdjerred.capstone.server.network.event.events.NetworkEvent;
 import com.shepherdjerred.capstone.server.network.event.events.PacketReceivedEvent;
 import com.shepherdjerred.capstone.server.network.server.Connection;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,15 +26,10 @@ public class ServerChannelHandler extends ChannelDuplexHandler {
 
   @Override
   public void channelActive(ChannelHandlerContext context) {
+    log.info("Client connected");
     this.channel = context.pipeline().channel();
     connection = new NettyConnection(this);
     eventQueue.add(new ClientConnectedEvent(connection));
-  }
-
-  @Override
-  public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)
-      throws Exception {
-    super.write(ctx, msg, promise);
   }
 
   @Override
@@ -44,11 +37,6 @@ public class ServerChannelHandler extends ChannelDuplexHandler {
     var packet = (Packet) message;
     var event = new PacketReceivedEvent(connection, packet);
     eventQueue.add(event);
-  }
-
-  @Override
-  public void channelReadComplete(ChannelHandlerContext context) {
-    context.writeAndFlush(Unpooled.EMPTY_BUFFER);
   }
 
   @Override

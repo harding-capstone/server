@@ -62,7 +62,7 @@ public class NetworkManager {
 
   private void startNetwork() {
     networkServer = new NetworkServer(eventBus, gameAddress);
-    networkThread = new Thread(networkServer, "NETWORK");
+    networkThread = new Thread(networkServer, "SERVER_NETWORK");
     networkThread.start();
   }
 

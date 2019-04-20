@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info" name="network">
-  <Appenders>
-    <Console name="STDOUT" target="SYSTEM_OUT">
-      <PatternLayout>
-        <Pattern>%d{HH:mm:ss,SSS} %p %c{1.} [%t] %m%n</Pattern>
-      </PatternLayout>
-    </Console>
-    <RollingFile name="File" fileName="logs/network.log"
-      filePattern="logs/$${date:yyyy-M}/app-%d{MM-dd-yyyy}-%i.log.gz">
-      <PatternLayout>
-        <Pattern>%d{HH:mm:ss,SSS} %p %c{1.} [%t] %m%n</Pattern>
-      </PatternLayout>
-      <DefaultRolloverStrategy max="10"/>
-      <Policies>
-        <OnStartupTriggeringPolicy/>
-        <SizeBasedTriggeringPolicy size="100 MB"/>
-      </Policies>
-    </RollingFile>
-  </Appenders>
-  <Loggers>
-    <Root level="trace">
-      <AppenderRef ref="File"/>
-      <AppenderRef ref="STDOUT"/>
-    </Root>
-  </Loggers>
+<Appenders>
+  <Console name="STDOUT" target="SYSTEM_OUT">
+    <PatternLayout>
+      <Pattern>%d{HH:mm:ss,SSS} %p %c{1.} [%t] %m%n</Pattern>
+    </PatternLayout>
+  </Console>
+  <RollingFile name="File" fileName="logs/network.log" filePattern="logs/$${date:yyyy-M}/app-%d{MM-dd-yyyy}-%i.log.gz">
+    <PatternLayout>
+      <Pattern>%d{HH:mm:ss,SSS} %p %c{1.} [%t] %m%n</Pattern>
+    </PatternLayout>
+    <DefaultRolloverStrategy max="10"/>
+    <Policies>
+      <OnStartupTriggeringPolicy/>
+      <SizeBasedTriggeringPolicy size="100 MB" />
+    </Policies>
+  </RollingFile>
+</Appenders>
+<Loggers>
+  <Root level="trace">
+    <AppenderRef ref="File"/>
+    <AppenderRef ref="STDOUT" level="INFO"/>
+  </Root>
+</Loggers>
 </Configuration>

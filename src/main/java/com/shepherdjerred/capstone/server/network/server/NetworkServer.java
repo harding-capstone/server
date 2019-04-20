@@ -11,7 +11,9 @@ import com.shepherdjerred.capstone.network.packet.packets.PlayerJoinPacket;
 import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.network.server.netty.NettyServerBootstrap;
 import java.net.SocketAddress;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class NetworkServer implements Runnable {
 
   private final EventBus<Event> eventBus;

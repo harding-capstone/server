@@ -39,7 +39,7 @@ public class GameServer implements Runnable {
 
   @Override
   public void run() {
-    final int ticksPerSecond = 30;
+    final int ticksPerSecond = 10;
     final int millisecondsPerSecond = 1000;
     final int sleepMilliseconds = millisecondsPerSecond / ticksPerSecond;
 
