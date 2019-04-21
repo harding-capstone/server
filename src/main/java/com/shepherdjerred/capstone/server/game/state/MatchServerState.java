@@ -70,11 +70,17 @@ public class MatchServerState extends AbstractGameServerState {
         var nextPlayerId = newMatch.getActivePlayerId();
         var nextPlayer = gameState.getLobby().getPlayer(nextPlayerId);
 
+        log.info(gameState.getLobby());
+        log.info(gameState.getMatch());
+
         if (nextPlayer instanceof AiPlayer) {
+          log.info("Doing AI turn...");
           eventBus.dispatch(new DoAiTurnEvent(nextPlayer));
+        } else {
+          log.info("Next player is not an AI " + nextPlayer);
         }
       } catch (Exception e) {
-        log.error("Error doing turn");
+        log.error("Error doing turn", e);
       }
     });
 

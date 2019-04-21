@@ -12,7 +12,9 @@ import com.shepherdjerred.capstone.server.event.PlayerInformationReceivedEvent;
 import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.event.StartGameEvent;
 import com.shepherdjerred.capstone.server.game.GameLogic;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class LobbyState extends AbstractGameServerState {
 
   public LobbyState(GameLogic gameLogic,
@@ -52,11 +54,14 @@ public class LobbyState extends AbstractGameServerState {
     frame.registerHandler(FillSlotsWithAiEvent.class, (event) -> {
       var lobby = gameLogic.getGameState().getLobby();
 
-      while (lobby.hasFreeSlot()) {
-        var player = lobby.createAiPlayer();
-        eventBus.dispatch(new PlayerJoinEvent(player, null));
-        lobby.addPlayer(player);
-      }
+      log.info("Filling slots..");
+
+      var player = lobby.createAiPlayer();
+      eventBus.dispatch(new PlayerJoinEvent(player, null));
+      lobby = lobby.addPlayer(player);
+      log.info("Added player");
+
+      gameLogic.setGameState(gameLogic.getGameState().setLobby(lobby));
     });
 
     frame.registerHandler(StartGameEvent.class, (event) -> {

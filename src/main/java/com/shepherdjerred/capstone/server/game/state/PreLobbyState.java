@@ -6,11 +6,14 @@ import com.shepherdjerred.capstone.common.player.HumanPlayer;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
+import com.shepherdjerred.capstone.server.event.FillSlotsWithAiEvent;
 import com.shepherdjerred.capstone.server.event.PlayerInformationReceivedEvent;
 import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
 import com.shepherdjerred.capstone.server.game.GameLogic;
 import com.shepherdjerred.capstone.server.network.manager.events.StartBroadcastEvent;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class PreLobbyState extends AbstractGameServerState {
 
   public PreLobbyState(GameLogic gameLogic,
@@ -39,6 +42,19 @@ public class PreLobbyState extends AbstractGameServerState {
       if (lobbyType == LobbyType.NETWORK) {
         eventBus.dispatch(new StartBroadcastEvent(lobby));
       }
+    });
+
+    frame.registerHandler(FillSlotsWithAiEvent.class, (event) -> {
+      var lobby = gameLogic.getGameState().getLobby();
+
+      log.info("Filling slots...");
+
+      var player = lobby.createAiPlayer();
+      eventBus.dispatch(new PlayerJoinEvent(player, null));
+      lobby = lobby.addPlayer(player);
+      log.info("Added player");
+
+      gameLogic.setGameState(gameLogic.getGameState().setLobby(lobby));
     });
 
     return frame;
