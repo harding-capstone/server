@@ -15,6 +15,7 @@ public class GameLogic {
   @Setter
   private Player host = null;
   @Getter
+  @Setter
   private GameState gameState;
   private GameServerState gameServerState;
 

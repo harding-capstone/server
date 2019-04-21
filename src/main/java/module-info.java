@@ -4,6 +4,7 @@ module com.shepherdjerred.capstone.server {
   requires com.shepherdjerred.capstone.common;
   requires com.shepherdjerred.capstone.events;
   requires com.shepherdjerred.capstone.network;
+  requires com.shepherdjerred.capstone.ai;
   requires com.google.common;
   requires io.netty.all;
   requires org.apache.logging.log4j;

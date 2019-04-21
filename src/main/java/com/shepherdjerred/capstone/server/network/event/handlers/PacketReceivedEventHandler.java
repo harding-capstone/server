@@ -3,8 +3,14 @@ package com.shepherdjerred.capstone.server.network.event.handlers;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandler;
+import com.shepherdjerred.capstone.network.packet.packets.DoTurnPacket;
+import com.shepherdjerred.capstone.network.packet.packets.FillSlotsWithAiPacket;
 import com.shepherdjerred.capstone.network.packet.packets.PlayerDescriptionPacket;
+import com.shepherdjerred.capstone.network.packet.packets.StartMatchPacket;
+import com.shepherdjerred.capstone.server.event.FillSlotsWithAiEvent;
 import com.shepherdjerred.capstone.server.event.PlayerInformationReceivedEvent;
+import com.shepherdjerred.capstone.server.event.StartGameEvent;
+import com.shepherdjerred.capstone.server.event.TryDoTurnEvent;
 import com.shepherdjerred.capstone.server.network.event.events.PacketReceivedEvent;
 import com.shepherdjerred.capstone.server.network.server.Connection;
 import lombok.AllArgsConstructor;
@@ -22,6 +28,12 @@ public class PacketReceivedEventHandler implements EventHandler<PacketReceivedEv
 
     if (packet instanceof PlayerDescriptionPacket) {
       handlePlayerDescriptionPacket((PlayerDescriptionPacket) packet, event.getConnection());
+    } else if (packet instanceof StartMatchPacket) {
+      eventBus.dispatch(new StartGameEvent());
+    } else if (packet instanceof FillSlotsWithAiPacket) {
+      eventBus.dispatch(new FillSlotsWithAiEvent());
+    } else if (packet instanceof DoTurnPacket) {
+      eventBus.dispatch(new TryDoTurnEvent(((DoTurnPacket) packet).getTurn()));
     }
   }
 

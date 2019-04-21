@@ -57,7 +57,10 @@ public class NetworkManager {
   }
 
   private void stopBroadcast() {
-    serverBroadcast.stop();
+    if (serverBroadcast != null) {
+      serverBroadcast.stop();
+      serverBroadcast = null;
+    }
   }
 
   private void startNetwork() {
@@ -67,7 +70,10 @@ public class NetworkManager {
   }
 
   private void stopNetwork() {
-    networkServer.shutdown();
+    if (networkServer != null) {
+      networkServer.shutdown();
+      networkServer = null;
+    }
   }
 
   public void update() {

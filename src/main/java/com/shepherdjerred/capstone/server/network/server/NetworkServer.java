@@ -6,9 +6,13 @@ import com.shepherdjerred.capstone.common.player.Player;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
+import com.shepherdjerred.capstone.network.packet.packets.DoTurnPacket;
 import com.shepherdjerred.capstone.network.packet.packets.Packet;
 import com.shepherdjerred.capstone.network.packet.packets.PlayerJoinPacket;
+import com.shepherdjerred.capstone.network.packet.packets.StartMatchPacket;
+import com.shepherdjerred.capstone.server.event.DoTurnEvent;
 import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
+import com.shepherdjerred.capstone.server.event.StartGameEvent;
 import com.shepherdjerred.capstone.server.network.server.netty.NettyServerBootstrap;
 import java.net.SocketAddress;
 import lombok.extern.log4j.Log4j2;
@@ -31,8 +35,18 @@ public class NetworkServer implements Runnable {
     var frame = new EventHandlerFrame<>();
 
     frame.registerHandler(PlayerJoinEvent.class, (event) -> {
-      setPlayerConnection(event.getPlayer(), event.getConnection());
+      if (event.getConnection() != null) {
+        setPlayerConnection(event.getPlayer(), event.getConnection());
+      }
       send(new PlayerJoinPacket(event.getPlayer()));
+    });
+
+    frame.registerHandler(StartGameEvent.class, (event) -> {
+      send(new StartMatchPacket());
+    });
+
+    frame.registerHandler(DoTurnEvent.class, (event) -> {
+      send(new DoTurnPacket(event.getTurn()));
     });
 
     eventBus.registerHandlerFrame(frame);
