@@ -32,6 +32,8 @@ public class MatchServerState extends AbstractGameServerState {
       var nextPlayerId = match.getActivePlayerId();
       var nextPlayer = gameState.getLobby().getPlayer(nextPlayerId);
 
+      log.info(gameState.getLobby());
+      log.info(nextPlayer);
       if (nextPlayer instanceof AiPlayer) {
         eventBus.dispatch(new DoAiTurnEvent(nextPlayer));
       }
