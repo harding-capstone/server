@@ -6,6 +6,7 @@ import com.shepherdjerred.capstone.common.player.HumanPlayer;
 import com.shepherdjerred.capstone.events.Event;
 import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
+import com.shepherdjerred.capstone.logic.player.QuoridorPlayer;
 import com.shepherdjerred.capstone.server.event.FillSlotsWithAiEvent;
 import com.shepherdjerred.capstone.server.event.PlayerInformationReceivedEvent;
 import com.shepherdjerred.capstone.server.event.PlayerJoinEvent;
@@ -51,7 +52,7 @@ public class PreLobbyState extends AbstractGameServerState {
 
       var player = lobby.createAiPlayer();
       eventBus.dispatch(new PlayerJoinEvent(player, null));
-      lobby = lobby.addPlayer(player);
+      lobby = lobby.setPlayer(player, QuoridorPlayer.TWO);
       log.info("Added player");
 
       gameLogic.setGameState(gameLogic.getGameState().setLobby(lobby));

@@ -34,9 +34,6 @@ public class MatchServerState extends AbstractGameServerState {
 
       log.info(gameState.getLobby());
       log.info(nextPlayer);
-      if (nextPlayer instanceof AiPlayer) {
-        eventBus.dispatch(new DoAiTurnEvent(nextPlayer));
-      }
     });
 
     frame.registerHandler(DoAiTurnEvent.class, (event) -> {

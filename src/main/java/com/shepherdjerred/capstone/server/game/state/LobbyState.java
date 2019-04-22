@@ -6,6 +6,7 @@ import com.shepherdjerred.capstone.events.EventBus;
 import com.shepherdjerred.capstone.events.handlers.EventHandlerFrame;
 import com.shepherdjerred.capstone.logic.board.BoardSettings;
 import com.shepherdjerred.capstone.logic.match.Match;
+import com.shepherdjerred.capstone.logic.player.QuoridorPlayer;
 import com.shepherdjerred.capstone.server.event.FillSlotsWithAiEvent;
 import com.shepherdjerred.capstone.server.event.MatchStartedEvent;
 import com.shepherdjerred.capstone.server.event.PlayerInformationReceivedEvent;
@@ -27,6 +28,8 @@ public class LobbyState extends AbstractGameServerState {
     var frame = new EventHandlerFrame<>();
 
     frame.registerHandler(PlayerInformationReceivedEvent.class, (event) -> {
+      log.info("PLAYER IS JOINING");
+
       var lobby = gameLogic.getGameState().getLobby();
 
       if (lobby.isFull()) {
@@ -46,7 +49,9 @@ public class LobbyState extends AbstractGameServerState {
           playerInformation.getName(),
           element.get());
 
-      lobby.addPlayer(player);
+      lobby = lobby.addPlayer(player);
+
+      gameLogic.setGameState(gameLogic.getGameState().setLobby(lobby));
 
       eventBus.dispatch(new PlayerJoinEvent(player, event.getConnection()));
     });
@@ -58,7 +63,7 @@ public class LobbyState extends AbstractGameServerState {
 
       var player = lobby.createAiPlayer();
       eventBus.dispatch(new PlayerJoinEvent(player, null));
-      lobby = lobby.addPlayer(player);
+      lobby = lobby.setPlayer(player, QuoridorPlayer.TWO);
       log.info("Added player");
 
       gameLogic.setGameState(gameLogic.getGameState().setLobby(lobby));
